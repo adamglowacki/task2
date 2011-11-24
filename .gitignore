@@ -1,0 +1,7 @@
+/target
+/.project
+/.classpath
+/.settings
+public.sql
+refresh-db.sh
+script-schema.sh
