@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -27,18 +28,20 @@ import pl.edu.mimuw.ag291541.task2.security.entity.User;
 @ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class HibernateUserDaoTest {
-	Logger logger = LoggerFactory.getLogger(HibernateUserDaoTest.class);
+	private Logger logger = LoggerFactory.getLogger(HibernateUserDaoTest.class);
 	@Autowired
-	UserDAO userDao;
+	private UserDAO userDao;
+	@Autowired
+	private HibernateTemplate hibernateTemplate;
 
 	@Before
 	public void loadData() {
-		GlobalFixture.getInstance().loadData();
+		GlobalFixture.getInstance().loadData(hibernateTemplate);
 	}
 
 	@After
 	public void removeData() {
-		GlobalFixture.getInstance().removeData();
+		GlobalFixture.getInstance().removeData(hibernateTemplate);
 	}
 
 	private void log(String msg) {
@@ -74,7 +77,7 @@ public class HibernateUserDaoTest {
 		User kunegunda = userDao.getUser(kunegundaName, kunegundaSurname);
 		userDao.deleteUser(kunegunda);
 		try {
-			userDao.getUser(kunegunda.getId());
+			kunegunda = userDao.getUser(kunegunda.getId());
 			logger.info("User deleting failed.");
 			assertTrue(false);
 		} catch (DataRetrievalFailureException e) {

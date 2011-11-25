@@ -11,4 +11,11 @@ public class DaoUtilLibrary {
 		else
 			return l.get(0);
 	}
+
+	public <T> T notNull(T t) {
+		if (t != null)
+			return t;
+		else
+			throw new IncorrectResultSizeDataAccessException(1);
+	}
 }

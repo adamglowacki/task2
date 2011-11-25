@@ -19,6 +19,11 @@ public class GlobalFixture {
 	public static final int groupsNumber = 2;
 
 	private static GlobalFixture instance = new GlobalFixture();
+
+	/*
+	 * TODO to make this wiring work to remove templates from parameters of
+	 * every method
+	 */
 	@Autowired
 	private HibernateTemplate hibernateTemplate;
 
@@ -31,34 +36,34 @@ public class GlobalFixture {
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void loadData() {
-		User kunegunda = newUser(kunegundaName, kunegundaSurname);
-		User jerzy = newUser(jerzyName, jerzySurname);
-		Group administratorzy = newGroup(administratorzyName);
-		Group czytacze = newGroup(czytaczeName);
+	public void loadData(HibernateTemplate ht) {
+		User kunegunda = newUser(ht, kunegundaName, kunegundaSurname);
+		User jerzy = newUser(ht, jerzyName, jerzySurname);
+		Group administratorzy = newGroup(ht, administratorzyName);
+		Group czytacze = newGroup(ht, czytaczeName);
 		czytacze.getMembers().add(jerzy);
 		administratorzy.getMembers().add(kunegunda);
 	}
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-	public void removeData() {
-		deleteAll(User.class);
-		deleteAll(Group.class);
+	public void removeData(HibernateTemplate ht) {
+		deleteAll(ht, User.class);
+		deleteAll(ht, Group.class);
 	}
 
-	private User newUser(String name, String surname) {
+	private User newUser(HibernateTemplate ht, String name, String surname) {
 		User u = new User(name, surname);
-		u.setId((Long) hibernateTemplate.save(u));
+		u.setId((Long) ht.save(u));
 		return u;
 	}
 
-	private Group newGroup(String name) {
+	private Group newGroup(HibernateTemplate ht, String name) {
 		Group g = new Group(name);
-		g.setId((Long) hibernateTemplate.save(g));
+		g.setId((Long) ht.save(g));
 		return g;
 	}
 
-	private <T> void deleteAll(Class<T> clazz) {
-		hibernateTemplate.deleteAll(hibernateTemplate.loadAll(clazz));
+	private <T> void deleteAll(HibernateTemplate ht, Class<T> clazz) {
+		ht.deleteAll(ht.loadAll(clazz));
 	}
 }

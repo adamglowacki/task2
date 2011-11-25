@@ -1,13 +1,16 @@
 package pl.edu.mimuw.ag291541.task2.security.entity;
 
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ann_user")
+@Table(name = "user")
 public class User {
 	@Id
 	@GeneratedValue
@@ -16,6 +19,8 @@ public class User {
 	private String name;
 	@NotNull
 	private String surname;
+	@ManyToMany(mappedBy = "members")
+	private Set<Group> groups;
 
 	public User() {
 	}
@@ -48,6 +53,14 @@ public class User {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
 	}
 
 	@Override
