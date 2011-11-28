@@ -1,11 +1,11 @@
 package pl.edu.mimuw.ag291541.task2;
 
 import static org.junit.Assert.assertTrue;
-import static pl.edu.mimuw.ag291541.task2.GlobalFixture.jerzyName;
-import static pl.edu.mimuw.ag291541.task2.GlobalFixture.jerzySurname;
-import static pl.edu.mimuw.ag291541.task2.GlobalFixture.kunegundaName;
-import static pl.edu.mimuw.ag291541.task2.GlobalFixture.kunegundaSurname;
-import static pl.edu.mimuw.ag291541.task2.GlobalFixture.usersNumber;
+import static pl.edu.mimuw.ag291541.task2.DbFixture.jerzyName;
+import static pl.edu.mimuw.ag291541.task2.DbFixture.jerzySurname;
+import static pl.edu.mimuw.ag291541.task2.DbFixture.kunegundaName;
+import static pl.edu.mimuw.ag291541.task2.DbFixture.kunegundaSurname;
+import static pl.edu.mimuw.ag291541.task2.DbFixture.usersNumber;
 
 import java.util.List;
 
@@ -32,16 +32,18 @@ public class HibernateUserDaoTest {
 	@Autowired
 	private UserDAO userDao;
 	@Autowired
-	private HibernateTemplate hibernateTemplate;
+	private HibernateTemplate template;
+	private DbFixture fixture;
 
 	@Before
 	public void loadData() {
-		GlobalFixture.getInstance().loadData(hibernateTemplate);
+		fixture = new DbFixture(template, userDao);
+		fixture.loadData();
 	}
 
 	@After
 	public void removeData() {
-		GlobalFixture.getInstance().removeData(hibernateTemplate);
+		fixture.removeData();
 	}
 
 	private void log(String msg) {

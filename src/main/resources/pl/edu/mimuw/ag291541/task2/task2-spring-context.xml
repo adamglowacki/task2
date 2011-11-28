@@ -13,8 +13,6 @@
 
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
-	<!-- <context:component-scan base-package="pl.edu.mimuw.ag291541.task2.security.dao" 
-		/> -->
 	<context:spring-configured />
 
 	<bean id="dataSource"
