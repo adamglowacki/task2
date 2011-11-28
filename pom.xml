@@ -1,55 +1,55 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>pl.edu.mimuw.ag291541</groupId>
-  <artifactId>task2</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>Hibernate Task 2</name>
+	<groupId>pl.edu.mimuw.ag291541</groupId>
+	<artifactId>task2</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>Hibernate Task 2</name>
 
-  <properties>
+	<properties>
 		<compiler.version>2.3.2</compiler.version>
-    <hibernate.version>3.6.8.Final</hibernate.version>
-    <hibernateValidator.version>4.2.0.Final</hibernateValidator.version>
+		<hibernate.version>3.6.8.Final</hibernate.version>
+		<hibernateValidator.version>4.2.0.Final</hibernateValidator.version>
 		<slf4j.version>1.6.2</slf4j.version>
 		<javassist.version>3.8.0.GA</javassist.version>
 		<postgresql.version>9.0-801.jdbc4</postgresql.version>
 		<junit.version>4.9</junit.version>
 		<hsqldb.version>1.8.0.10</hsqldb.version>
 		<java.version>1.6</java.version>
-    <spring.version>3.0.6.RELEASE</spring.version>
-    <slf4jSpring.version>1.6.1</slf4jSpring.version>
-    <aspectj.version>1.6.11</aspectj.version>
-  </properties>
+		<spring.version>3.0.6.RELEASE</spring.version>
+		<slf4jSpring.version>1.6.1</slf4jSpring.version>
+		<aspectj.version>1.6.11</aspectj.version>
+	</properties>
 
-  <build>
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${compiler.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
-      </plugin>
-    </plugins>
-  </build>
+			</plugin>
+		</plugins>
+	</build>
 
-  <dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>${hibernateValidator.version}</version>
-    </dependency>
-    <dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>${hibernateValidator.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
@@ -75,46 +75,51 @@
 			<artifactId>postgresql</artifactId>
 			<version>${postgresql.version}</version>
 		</dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-orm</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjrt</artifactId>
-      <version>${aspectj.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjtools</artifactId>
-      <version>${aspectj.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.aspectj</groupId>
-      <artifactId>aspectjweaver</artifactId>
-      <version>${aspectj.version}</version>
-    </dependency>
-<!--     <dependency> -->
-<!--       <groupId>org.slf4j</groupId> -->
-<!--       <artifactId>com.springsource.slf4j.api</artifactId> -->
-<!--       <version>${slf4jSpring.version}</version> -->
-<!--     </dependency> -->
-  </dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>com.springsource.slf4j.api</artifactId> -->
+		<!-- <version>${slf4jSpring.version}</version> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+	</dependencies>
 
 </project>

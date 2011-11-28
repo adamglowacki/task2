@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import pl.edu.mimuw.ag291541.task2.security.entity.User;

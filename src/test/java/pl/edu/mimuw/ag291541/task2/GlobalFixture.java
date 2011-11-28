@@ -1,6 +1,7 @@
 package pl.edu.mimuw.ag291541.task2;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
+@Configurable
 public class GlobalFixture {
 	public static final String kunegundaName = "Kunegunda";
 	public static final String kunegundaSurname = "Jelonek";
@@ -28,7 +30,6 @@ public class GlobalFixture {
 	private HibernateTemplate hibernateTemplate;
 
 	private GlobalFixture() {
-
 	}
 
 	public static GlobalFixture getInstance() {
@@ -37,6 +38,7 @@ public class GlobalFixture {
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
 	public void loadData(HibernateTemplate ht) {
+		assert (hibernateTemplate != null);
 		User kunegunda = newUser(ht, kunegundaName, kunegundaSurname);
 		User jerzy = newUser(ht, jerzyName, jerzySurname);
 		Group administratorzy = newGroup(ht, administratorzyName);
