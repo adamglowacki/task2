@@ -3,6 +3,7 @@ package pl.edu.mimuw.ag291541.task2.security.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -17,6 +18,7 @@ public class Group {
 	@GeneratedValue
 	private Long id;
 	@NotNull
+	@Column(unique = true, updatable = false)
 	private String name;
 	@ManyToMany
 	private Set<User> members = new HashSet<User>();

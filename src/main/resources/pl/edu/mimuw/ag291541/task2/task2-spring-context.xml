@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:security="http://www.springframework/schema/security"
 	xsi:schemaLocation="http://www.springframework.org/schema/aop
 	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	http://www.springframework.org/schema/beans
@@ -9,7 +10,9 @@
 	http://www.springframework.org/schema/tx
 	http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
@@ -78,7 +81,7 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<tx:annotation-driven />
+	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
 		<property name="allowCreate" value="true" />
@@ -91,5 +94,16 @@
 		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateUserDAO">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
+
+	<bean id="contentDao"
+		class="pl.edu.mimuw.ag291541.task2.dao.hibernate.HibernateContentDAO">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
+	<bean id="contentService" class="pl.edu.mimuw.ag291541.task2.service.ContentServiceImpl" />
+	<bean id="announcementService"
+		class="pl.edu.mimuw.ag291541.task2.service.AnnouncementServiceImpl" />
+	<bean id="aclService"
+		class="pl.edu.mimuw.ag291541.task2.security.service.ACLServiceImpl" />
 
 </beans>

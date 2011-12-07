@@ -1,26 +1,32 @@
 package pl.edu.mimuw.ag291541.task2.security.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "user")
+@Table(name = "user", uniqueConstraints = { @UniqueConstraint(columnNames = {
+		"name", "surname" }) })
 public class User {
 	@Id
 	@GeneratedValue
 	private Long id;
 	@NotNull
+	@Column(updatable = false)
 	private String name;
 	@NotNull
+	@Column(updatable = false)
 	private String surname;
 	@ManyToMany(mappedBy = "members")
-	private Set<Group> groups;
+	private Set<Group> groups = new HashSet<Group>();
 
 	public User() {
 	}

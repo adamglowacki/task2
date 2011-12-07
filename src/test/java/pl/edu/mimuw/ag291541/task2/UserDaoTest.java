@@ -1,11 +1,11 @@
 package pl.edu.mimuw.ag291541.task2;
 
 import static org.junit.Assert.assertTrue;
-import static pl.edu.mimuw.ag291541.task2.DbFixture.jerzyName;
-import static pl.edu.mimuw.ag291541.task2.DbFixture.jerzySurname;
-import static pl.edu.mimuw.ag291541.task2.DbFixture.kunegundaName;
-import static pl.edu.mimuw.ag291541.task2.DbFixture.kunegundaSurname;
-import static pl.edu.mimuw.ag291541.task2.DbFixture.usersNumber;
+import static pl.edu.mimuw.ag291541.task2.DbFix.jerzyName;
+import static pl.edu.mimuw.ag291541.task2.DbFix.jerzySurname;
+import static pl.edu.mimuw.ag291541.task2.DbFix.kunegundaName;
+import static pl.edu.mimuw.ag291541.task2.DbFix.kunegundaSurname;
+import static pl.edu.mimuw.ag291541.task2.DbFix.usersNumber;
 
 import java.util.List;
 
@@ -21,23 +21,26 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
 @ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class HibernateUserDaoTest {
-	private Logger logger = LoggerFactory.getLogger(HibernateUserDaoTest.class);
+public class UserDaoTest {
+	private Logger log = LoggerFactory.getLogger(UserDaoTest.class);
 	@Autowired
 	private UserDAO userDao;
 	@Autowired
+	private ContentDAO contentDao;
+	@Autowired
 	private HibernateTemplate template;
-	private DbFixture fixture;
+	private DbFix fixture;
 
 	@Before
 	public void loadData() {
-		fixture = new DbFixture(template, userDao);
+		fixture = new DbFix(template, userDao, contentDao);
 		fixture.loadData();
 	}
 
@@ -47,7 +50,7 @@ public class HibernateUserDaoTest {
 	}
 
 	private void log(String msg) {
-		logger.info(msg);
+		log.info(msg);
 	}
 
 	@Test
@@ -80,10 +83,10 @@ public class HibernateUserDaoTest {
 		userDao.deleteUser(kunegunda);
 		try {
 			kunegunda = userDao.getUser(kunegunda.getId());
-			logger.info("User deleting failed.");
+			log.info("User deleting failed.");
 			assertTrue(false);
 		} catch (DataRetrievalFailureException e) {
-			logger.info("User deleting was successful.");
+			log.info("User deleting was successful.");
 			assertTrue(true);
 		}
 	}

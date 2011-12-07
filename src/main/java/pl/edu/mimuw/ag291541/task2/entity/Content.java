@@ -12,6 +12,14 @@ public class Content {
 	private String title;
 	private String body;
 
+	public Content() {
+	}
+
+	public Content(String title, String body) {
+		this.title = title;
+		this.body = body;
+	}
+
 	public Long getId() {
 		return id;
 	}

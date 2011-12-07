@@ -14,6 +14,7 @@ public class AnnouncementInstance {
 	private Long id;
 	private boolean readStatus;
 	private Calendar readDate;
+	@ManyToOne(optional = false)
 	private User receiver;
 	@ManyToOne
 	private Announcement announcement;
@@ -21,8 +22,9 @@ public class AnnouncementInstance {
 	public AnnouncementInstance() {
 	}
 
-	public AnnouncementInstance(User receiver) {
+	public AnnouncementInstance(User receiver, Announcement announcement) {
 		this.receiver = receiver;
+		this.announcement = announcement;
 	}
 
 	public Long getId() {
