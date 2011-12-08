@@ -1,13 +1,21 @@
 package pl.edu.mimuw.ag291541.task2.entity;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "content")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "contenttype", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("Content")
 public class Content {
 	@GeneratedValue
 	@Id

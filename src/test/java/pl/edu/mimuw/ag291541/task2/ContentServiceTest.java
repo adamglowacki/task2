@@ -8,54 +8,25 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
-import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
-import pl.edu.mimuw.ag291541.task2.service.ContentService;
 
-@ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
-@RunWith(SpringJUnit4ClassRunner.class)
-public class ContentServiceTest {
+public class ContentServiceTest extends DbTest {
 	private Logger log = LoggerFactory.getLogger(ContentServiceTest.class);
-	@Autowired
-	private HibernateTemplate template;
-	@Autowired
-	private UserDAO userDao;
-	@Autowired
-	private ContentDAO contentDao;
-	@Autowired
-	private ContentService contentService;
-	private DbFix fix;
 
 	private final String title = "To jest tytuł.";
 	private final String body = "To jest ciało.";
 
-	@Before
-	public void loadData() {
-		fix = new DbFix(template, userDao, contentDao);
-		fix.loadData();
-	}
-
-	@After
-	public void removeData() {
-		fix.removeData();
-	}
-
 	@Test
+	@Transactional
 	public void createContent() {
 		Content c = contentService.createContent(title, body);
 		assertEquals(c.getTitle(), title);
@@ -64,6 +35,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void getContent() {
 		Content c = contentService.getContent(fix.gazetaId);
 		assertEquals(c.getTitle(), DbFix.gazetaTitle);
@@ -72,6 +44,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void getAnnouncement() {
 		Announcement a = contentService.getAnnouncement(fix.apelId);
 		assertEquals(a.getTitle(), DbFix.apelTitle);
@@ -92,6 +65,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void updateContentBody() {
 		final String body = "To jest coś całkiem nowego.";
 		Content c = contentService.getContent(fix.apelId);
@@ -103,6 +77,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void updateContentTitle() {
 		Content apel = contentService.getContent(fix.apelId);
 		apel.setTitle(DbFix.gazetaTitle);
@@ -111,6 +86,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void deleteContent() {
 		contentService.deleteContent(contentService.getContent(fix.gazetaId));
 		contentService.getContent(fix.gazetaId);
@@ -118,6 +94,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void getAllContents() {
 		Set<Content> got = new HashSet<Content>(contentService.getAllContents());
 		Set<Content> expected = new HashSet<Content>();
@@ -128,6 +105,7 @@ public class ContentServiceTest {
 	}
 
 	@Test
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void getAllAnnouncements() {
 		Set<Announcement> got = new HashSet<Announcement>(
 				contentService.getAllAnnouncements());

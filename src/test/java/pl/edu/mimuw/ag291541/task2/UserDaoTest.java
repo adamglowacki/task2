@@ -9,45 +9,16 @@ import static pl.edu.mimuw.ag291541.task2.DbFix.usersNumber;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
-import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
-@ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
-@RunWith(SpringJUnit4ClassRunner.class)
-public class UserDaoTest {
+public class UserDaoTest extends DbTest {
 	private Logger log = LoggerFactory.getLogger(UserDaoTest.class);
-	@Autowired
-	private UserDAO userDao;
-	@Autowired
-	private ContentDAO contentDao;
-	@Autowired
-	private HibernateTemplate template;
-	private DbFix fixture;
-
-	@Before
-	public void loadData() {
-		fixture = new DbFix(template, userDao, contentDao);
-		fixture.loadData();
-	}
-
-	@After
-	public void removeData() {
-		fixture.removeData();
-	}
 
 	private void log(String msg) {
 		log.info(msg);

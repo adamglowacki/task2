@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 
 @Entity
-@Table(name = "user", uniqueConstraints = { @UniqueConstraint(columnNames = {
+@Table(name = "secuser", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"name", "surname" }) })
 public class User {
 	@Id

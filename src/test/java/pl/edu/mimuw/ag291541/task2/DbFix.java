@@ -3,11 +3,6 @@ package pl.edu.mimuw.ag291541.task2;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
@@ -40,16 +35,13 @@ public class DbFix {
 
 	private UserDAO userDao;
 	private ContentDAO contentDao;
-	private HibernateTemplate template;
 
-	public DbFix(HibernateTemplate template, UserDAO userDao,
-			ContentDAO contentDao) {
-		this.template = template;
+	public DbFix(UserDAO userDao, ContentDAO contentDao) {
 		this.userDao = userDao;
 		this.contentDao = contentDao;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	// @Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void loadData() {
 		User kunegunda = userDao.createUser(kunegundaName, kunegundaSurname);
 		kunegundaId = kunegunda.getId();
@@ -79,17 +71,17 @@ public class DbFix {
 				assert false;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void removeData() {
-		deleteAll(Group.class);
-		deleteAll(User.class);
-		deleteAll(Content.class);
-		deleteAll(AnnouncementInstance.class);
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-
-	@Transactional
-	private <T> void deleteAll(Class<T> clazz) {
-		template.deleteAll(template.loadAll(clazz));
-	}
+	// @Transactional(propagation = Propagation.REQUIRES_NEW)
+	// public void removeData() {
+	// deleteAll(Group.class);
+	// deleteAll(Content.class);
+	// deleteAll(AnnouncementInstance.class);
+	// deleteAll(User.class);
+	// SecurityContextHolder.getContext().setAuthentication(null);
+	// }
+	//
+	// @Transactional
+	// private <T> void deleteAll(Class<T> clazz) {
+	// template.deleteAll(template.loadAll(clazz));
+	// }
 }

@@ -23,6 +23,7 @@
 		<slf4jSpring.version>1.6.1</slf4jSpring.version>
 		<aspectj.version>1.6.11</aspectj.version>
 		<spring-security.version>3.1.0.RELEASE</spring-security.version>
+		<cglib.version>2.2.2</cglib.version>
 	</properties>
 
 	<build>
@@ -51,11 +52,11 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernateValidator.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-simple</artifactId> -->
+		<!-- <version>${slf4j.version}</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
@@ -155,6 +156,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring-security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>${cglib.version}</version>
 		</dependency>
 	</dependencies>
 

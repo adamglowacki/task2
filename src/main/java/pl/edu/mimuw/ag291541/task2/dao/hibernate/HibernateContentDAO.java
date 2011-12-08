@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
@@ -17,6 +18,7 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 		ContentDAO {
 
 	@Override
+	@Transactional
 	public Content createContent(String title, String body) {
 		Content c = new Content(title, body);
 		getHibernateTemplate().persist(c);
@@ -24,6 +26,7 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 	}
 
 	@Override
+	@Transactional
 	public Announcement createAnnouncement(String title, String body,
 			Collection<User> recipients) {
 		Announcement a = new Announcement(title, body);
@@ -39,31 +42,37 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 	}
 
 	@Override
+	@Transactional
 	public Content getContent(Long id) {
 		return getHibernateTemplate().get(Content.class, id);
 	}
 
 	@Override
+	@Transactional
 	public Announcement getAnnouncement(Long id) {
 		return getHibernateTemplate().get(Announcement.class, id);
 	}
 
 	@Override
+	@Transactional
 	public void updateContent(Content c) {
 		getHibernateTemplate().update(c);
 	}
 
 	@Override
+	@Transactional
 	public void updateAnnouncement(Announcement a) {
 		getHibernateTemplate().update(a);
 	}
 
 	@Override
+	@Transactional
 	public void deleteContent(Content c) {
 		getHibernateTemplate().delete(c);
 	}
 
 	@Override
+	@Transactional
 	public AnnouncementInstance createAnnouncementInstance(User receiver,
 			Announcement announcement) {
 		AnnouncementInstance ai = new AnnouncementInstance(receiver,
@@ -73,21 +82,25 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 	}
 
 	@Override
+	@Transactional
 	public AnnouncementInstance getAnnouncementInstance(Long id) {
 		return getHibernateTemplate().get(AnnouncementInstance.class, id);
 	}
 
 	@Override
+	@Transactional
 	public void deleteAnnouncementInstance(AnnouncementInstance instance) {
 		getHibernateTemplate().delete(instance);
 	}
 
 	@Override
+	@Transactional
 	public List<Content> getAllContents() {
 		return getHibernateTemplate().loadAll(Content.class);
 	}
 
 	@Override
+	@Transactional
 	public List<Announcement> getAllAnnouncements() {
 		return getHibernateTemplate().loadAll(Announcement.class);
 	}

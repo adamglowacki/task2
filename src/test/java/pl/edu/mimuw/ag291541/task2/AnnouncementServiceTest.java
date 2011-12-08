@@ -8,58 +8,30 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
-import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
-import pl.edu.mimuw.ag291541.task2.service.AnnouncementService;
-import pl.edu.mimuw.ag291541.task2.service.ContentService;
 
 @ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
 @RunWith(SpringJUnit4ClassRunner.class)
-public class AnnouncementServiceTest {
+public class AnnouncementServiceTest extends DbTest {
 	private Logger log = LoggerFactory.getLogger(ContentServiceTest.class);
-	@Autowired
-	private HibernateTemplate template;
-	@Autowired
-	private UserDAO userDao;
-	@Autowired
-	private ContentDAO contentDao;
-	@Autowired
-	private ContentService contentService;
-	@Autowired
-	private AnnouncementService announcementService;
-	private DbFix fix;
 
 	private static final String title = "Obwieszczenie dotygodniowe";
 	private static final String body = "Dziś mamy wolne.";
 
-	@Before
-	public void loadData() {
-		fix = new DbFix(template, userDao, contentDao);
-		fix.loadData();
-	}
-
-	@After
-	public void removeData() {
-		fix.removeData();
-	}
-
 	@Test
+	@Transactional
 	public void login() {
 		User kunegunda = userDao.getUser(fix.kunegundaId);
 		announcementService.login(kunegunda);
@@ -70,6 +42,7 @@ public class AnnouncementServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void logout() {
 		announcementService.logout();
 		assertTrue(SecurityContextHolder.getContext().getAuthentication() == null);
@@ -77,6 +50,7 @@ public class AnnouncementServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void sendAnnouncement() {
 		Set<User> recipients = new HashSet<User>();
 		User kunegunda = userDao.getUser(fix.kunegundaId);
@@ -98,6 +72,7 @@ public class AnnouncementServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void sendAnnouncementToGroup() {
 		Set<Group> groups = new HashSet<Group>();
 		Group czytacze = userDao.getGroup(fix.czytaczeId);
@@ -124,6 +99,7 @@ public class AnnouncementServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void getAllUnread() {
 		User kunegunda = userDao.getUser(fix.kunegundaId);
 		announcementService.login(kunegunda);
@@ -145,6 +121,7 @@ public class AnnouncementServiceTest {
 	}
 
 	@Test
+	@Transactional
 	public void markRead() {
 		announcementService.login(userDao.getUser(fix.kunegundaId));
 		Announcement a = contentDao.getAnnouncement(fix.apelId);

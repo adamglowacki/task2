@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "announcement")
+@DiscriminatorValue("Announcement")
 public class Announcement extends Content {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "announcement")
 	private Set<AnnouncementInstance> instances = new HashSet<AnnouncementInstance>();
