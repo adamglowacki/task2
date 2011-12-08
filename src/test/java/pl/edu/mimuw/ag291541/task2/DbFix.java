@@ -83,6 +83,8 @@ public class DbFix {
 	public void removeData() {
 		deleteAll(Group.class);
 		deleteAll(User.class);
+		deleteAll(Content.class);
+		deleteAll(AnnouncementInstance.class);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 

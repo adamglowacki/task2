@@ -2,12 +2,16 @@ package pl.edu.mimuw.ag291541.task2.entity;
 
 import java.util.Calendar;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
+@Entity
+@Table(name = "announcement_instance")
 public class AnnouncementInstance {
 	@GeneratedValue
 	@Id
@@ -16,7 +20,7 @@ public class AnnouncementInstance {
 	private Calendar readDate;
 	@ManyToOne(optional = false)
 	private User receiver;
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Announcement announcement;
 
 	public AnnouncementInstance() {

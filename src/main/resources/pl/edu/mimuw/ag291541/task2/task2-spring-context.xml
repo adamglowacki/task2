@@ -45,12 +45,16 @@
 			<list>
 				<value>pl.edu.mimuw.ag291541.task2.security.entity.User</value>
 				<value>pl.edu.mimuw.ag291541.task2.security.entity.Group</value>
+				<value>pl.edu.mimuw.ag291541.task2.entity.Content</value>
+				<value>pl.edu.mimuw.ag291541.task2.entity.Announcement</value>
+				<value>pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance
+				</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
 			<value>
 				hibernate.default_schema=public
-				hibernate.hbm2ddl.auto=create
+				hibernate.hbm2ddl.auto=update
 				hibernate.id.new_generator_mappings=true
 				hibernate.show_sql=true
 				hibernate.format_sql=true

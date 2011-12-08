@@ -1,9 +1,13 @@
 package pl.edu.mimuw.ag291541.task2.entity;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+@Entity
+@Table(name = "content")
 public class Content {
 	@GeneratedValue
 	@Id

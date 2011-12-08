@@ -3,14 +3,18 @@ package pl.edu.mimuw.ag291541.task2.security.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+
+import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 
 @Entity
 @Table(name = "user", uniqueConstraints = { @UniqueConstraint(columnNames = {
@@ -25,8 +29,10 @@ public class User {
 	@NotNull
 	@Column(updatable = false)
 	private String surname;
-	@ManyToMany(mappedBy = "members")
+	@ManyToMany(mappedBy = "members", cascade = { CascadeType.ALL })
 	private Set<Group> groups = new HashSet<Group>();
+	@OneToMany(mappedBy = "receiver", cascade = { CascadeType.ALL })
+	private Set<AnnouncementInstance> announcements = new HashSet<AnnouncementInstance>();
 
 	public User() {
 	}
@@ -67,6 +73,14 @@ public class User {
 
 	public void setGroups(Set<Group> groups) {
 		this.groups = groups;
+	}
+
+	public Set<AnnouncementInstance> getAnnouncements() {
+		return announcements;
+	}
+
+	public void setAnnouncements(Set<AnnouncementInstance> announcements) {
+		this.announcements = announcements;
 	}
 
 	@Override

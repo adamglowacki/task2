@@ -3,6 +3,7 @@ package pl.edu.mimuw.ag291541.task2.security.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ public class Group {
 	@NotNull
 	@Column(unique = true, updatable = false)
 	private String name;
-	@ManyToMany
+	@ManyToMany(cascade = { CascadeType.ALL })
 	private Set<User> members = new HashSet<User>();
 
 	public Group() {
