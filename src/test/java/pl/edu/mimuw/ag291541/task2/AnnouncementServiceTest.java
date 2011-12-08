@@ -24,6 +24,7 @@ import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
+import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 import pl.edu.mimuw.ag291541.task2.service.AnnouncementService;
 import pl.edu.mimuw.ag291541.task2.service.ContentService;
@@ -93,6 +94,65 @@ public class AnnouncementServiceTest {
 			thoseWhoGot.add(i.getReceiver());
 		}
 		assertEquals(recipients, thoseWhoGot);
-		log.info("Sending an announcement succeeded.");
+		log.info("Sending an announcement to separate users succeeded.");
+	}
+
+	@Test
+	public void sendAnnouncementToGroup() {
+		Set<Group> groups = new HashSet<Group>();
+		Group czytacze = userDao.getGroup(fix.czytaczeId);
+		Group administratorzy = userDao.getGroup(fix.administratorzyId);
+		groups.add(czytacze);
+		groups.add(administratorzy);
+		Announcement a = announcementService.sendAnnouncementToGroups(title,
+				body, groups);
+		Set<AnnouncementInstance> insts = a.getInstances();
+		assertTrue(insts.size() == 3);
+		Set<User> expected = new HashSet<User>();
+		for (User u : czytacze.getMembers())
+			expected.add(u);
+		for (User u : administratorzy.getMembers())
+			expected.add(u);
+		Set<User> got = new HashSet<User>();
+		for (AnnouncementInstance i : insts) {
+			assertNull(i.getReadDate());
+			assertFalse(i.isReadStatus());
+			got.add(i.getReceiver());
+		}
+		assertEquals(expected, got);
+		log.info("Sending an announcement to not disjoint groups succeeded.");
+	}
+
+	@Test
+	public void getAllUnread() {
+		User kunegunda = userDao.getUser(fix.kunegundaId);
+		announcementService.login(kunegunda);
+		Set<Announcement> unread = announcementService.getAllUnread();
+		assertEquals(unread.size(), 1);
+		Announcement a = contentService.getAnnouncement(fix.apelId);
+		assertTrue(unread.contains(a));
+		AnnouncementInstance ai = null;
+		for (AnnouncementInstance i : a.getInstances()) {
+			if (i.getReceiver().equals(kunegunda))
+				if (ai == null)
+					ai = i;
+				else
+					assertTrue(false);
+		}
+		assertFalse(ai.isReadStatus());
+		assertNull(ai.getReadDate());
+		log.info("Getting all unread for a user works.");
+	}
+
+	@Test
+	public void markRead() {
+		announcementService.login(userDao.getUser(fix.kunegundaId));
+		Announcement a = contentDao.getAnnouncement(fix.apelId);
+		AnnouncementInstance ai = contentDao
+				.getAnnouncementInstance(fix.apelDoKunegundyId);
+		assertFalse(ai.isReadStatus());
+		announcementService.markRead(a);
+		assertTrue(ai.isReadStatus());
+		log.info("Marking announcement read seems to be ok.");
 	}
 }

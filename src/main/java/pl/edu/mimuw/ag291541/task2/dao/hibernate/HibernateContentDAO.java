@@ -1,6 +1,9 @@
 package pl.edu.mimuw.ag291541.task2.dao.hibernate;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -21,8 +24,16 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 	}
 
 	@Override
-	public Announcement createAnnouncement(String title, String body) {
+	public Announcement createAnnouncement(String title, String body,
+			Collection<User> recipients) {
 		Announcement a = new Announcement(title, body);
+		Set<User> distinctRecipients = new HashSet<User>(recipients);
+		Set<AnnouncementInstance> insts = new HashSet<AnnouncementInstance>();
+		for (User r : distinctRecipients) {
+			AnnouncementInstance i = new AnnouncementInstance(r, a);
+			insts.add(i);
+		}
+		a.setInstances(insts);
 		getHibernateTemplate().persist(a);
 		return a;
 	}
@@ -59,6 +70,11 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 				announcement);
 		getHibernateTemplate().persist(ai);
 		return ai;
+	}
+
+	@Override
+	public AnnouncementInstance getAnnouncementInstance(Long id) {
+		return getHibernateTemplate().get(AnnouncementInstance.class, id);
 	}
 
 	@Override

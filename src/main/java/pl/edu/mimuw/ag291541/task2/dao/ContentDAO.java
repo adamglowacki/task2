@@ -1,5 +1,6 @@
 package pl.edu.mimuw.ag291541.task2.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
@@ -16,7 +17,8 @@ public interface ContentDAO {
 	 * announcement instances later and tell them they should refer to this
 	 * object.
 	 */
-	public Announcement createAnnouncement(String title, String body);
+	public Announcement createAnnouncement(String title, String body,
+			Collection<User> recipients);
 
 	public Content getContent(Long id);
 
@@ -35,6 +37,8 @@ public interface ContentDAO {
 	/* Announcement instances */
 	public AnnouncementInstance createAnnouncementInstance(User receiver,
 			Announcement announcement);
+
+	public AnnouncementInstance getAnnouncementInstance(Long id);
 
 	public void deleteAnnouncementInstance(AnnouncementInstance instance);
 }

@@ -1,5 +1,8 @@
 package pl.edu.mimuw.ag291541.task2;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,7 +49,7 @@ public class DbFix {
 		this.contentDao = contentDao;
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void loadData() {
 		User kunegunda = userDao.createUser(kunegundaName, kunegundaSurname);
 		kunegundaId = kunegunda.getId();
@@ -57,26 +60,33 @@ public class DbFix {
 		Group czytacze = userDao.createGroup(czytaczeName);
 		czytaczeId = czytacze.getId();
 		czytacze.getMembers().add(jerzy);
+		czytacze.getMembers().add(kunegunda);
 		administratorzy.getMembers().add(kunegunda);
 		Content gazeta = contentDao.createContent(gazetaTitle, gazetaBody);
 		gazetaId = gazeta.getId();
-		Announcement apel = contentDao.createAnnouncement(apelTitle, apelBody);
+		Set<User> apelRecipients = new HashSet<User>();
+		apelRecipients.add(kunegunda);
+		apelRecipients.add(jerzy);
+		Announcement apel = contentDao.createAnnouncement(apelTitle, apelBody,
+				apelRecipients);
 		apelId = apel.getId();
-		AnnouncementInstance apelDoKunegundy = contentDao
-				.createAnnouncementInstance(kunegunda, apel);
-		apelDoKunegundyId = apelDoKunegundy.getId();
-		AnnouncementInstance apelDoJerzego = contentDao
-				.createAnnouncementInstance(jerzy, apel);
-		apelDoJerzegoId = apelDoJerzego.getId();
+		for (AnnouncementInstance i : apel.getInstances())
+			if (i.getReceiver().equals(kunegunda))
+				apelDoKunegundyId = i.getId();
+			else if (i.getReceiver().equals(jerzy))
+				apelDoJerzegoId = i.getId();
+			else
+				assert false;
 	}
 
-	@Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void removeData() {
 		deleteAll(Group.class);
 		deleteAll(User.class);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
+	@Transactional
 	private <T> void deleteAll(Class<T> clazz) {
 		template.deleteAll(template.loadAll(clazz));
 	}

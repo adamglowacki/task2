@@ -4,13 +4,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
 public class AnnouncementServiceImpl implements AnnouncementService {
+	@Autowired
+	ContentDAO contentDao;
 
 	@Override
 	@Transactional
@@ -30,8 +34,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Transactional
 	public Announcement sendAnnouncement(String title, String body,
 			Collection<User> recipients) {
-		// TODO Auto-generated method stub
-		return null;
+		return contentDao.createAnnouncement(title, body, recipients);
 	}
 
 	@Override
@@ -56,7 +59,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Transactional
 	public void markRead(Announcement a) {
 		// TODO Auto-generated method stub
-
 	}
 
 }
