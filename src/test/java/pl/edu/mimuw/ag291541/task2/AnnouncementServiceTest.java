@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
+import pl.edu.mimuw.ag291541.task2.security.UserAuthenticationImpl;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
@@ -35,8 +36,9 @@ public class AnnouncementServiceTest extends DbTest {
 	public void login() {
 		User kunegunda = userDao.getUser(fix.kunegundaId);
 		announcementService.login(kunegunda);
-		Object principal = SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
+		Object auth = SecurityContextHolder.getContext().getAuthentication();
+		assertTrue(auth instanceof UserAuthenticationImpl);
+		User principal = ((UserAuthenticationImpl) auth).getUser();
 		assertTrue(kunegunda.equals(principal));
 		log.info("Logged in successfully.");
 	}
@@ -73,7 +75,7 @@ public class AnnouncementServiceTest extends DbTest {
 
 	@Test
 	@Transactional
-	public void sendAnnouncementToGroup() {
+	public void sendAnnouncementToGroups() {
 		Set<Group> groups = new HashSet<Group>();
 		Group czytacze = userDao.getGroup(fix.czytaczeId);
 		Group administratorzy = userDao.getGroup(fix.administratorzyId);
@@ -82,12 +84,12 @@ public class AnnouncementServiceTest extends DbTest {
 		Announcement a = announcementService.sendAnnouncementToGroups(title,
 				body, groups);
 		Set<AnnouncementInstance> insts = a.getInstances();
-		assertTrue(insts.size() == 3);
 		Set<User> expected = new HashSet<User>();
 		for (User u : czytacze.getMembers())
 			expected.add(u);
 		for (User u : administratorzy.getMembers())
 			expected.add(u);
+		assertTrue(insts.size() == expected.size());
 		Set<User> got = new HashSet<User>();
 		for (AnnouncementInstance i : insts) {
 			assertNull(i.getReadDate());

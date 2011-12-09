@@ -40,5 +40,9 @@ public interface ContentDAO {
 
 	public AnnouncementInstance getAnnouncementInstance(Long id);
 
+	public AnnouncementInstance getAnnouncementInstance(Announcement a, User u);
+
+	public List<AnnouncementInstance> getUnreadAnnouncements(User u);
+
 	public void deleteAnnouncementInstance(AnnouncementInstance instance);
 }

@@ -76,4 +76,9 @@ public class AnnouncementInstance {
 		return "AnnouncementInstance [id=" + id + ", readStatus=" + readStatus
 				+ ", readDate=" + readDate + ", receiver=" + receiver + "]";
 	}
+
+	public void markRead() {
+		setReadDate(Calendar.getInstance());
+		setReadStatus(true);
+	}
 }

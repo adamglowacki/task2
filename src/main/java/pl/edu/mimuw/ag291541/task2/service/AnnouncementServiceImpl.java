@@ -2,32 +2,38 @@ package pl.edu.mimuw.ag291541.task2.service;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
+import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
+import pl.edu.mimuw.ag291541.task2.security.UserAuthenticationImpl;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
+import pl.edu.mimuw.ag291541.task2.util.UserUtil;
 
 public class AnnouncementServiceImpl implements AnnouncementService {
 	@Autowired
 	ContentDAO contentDao;
+	@Autowired
+	UserUtil userUtil;
 
 	@Override
 	@Transactional
 	public void login(User user) {
-		// TODO Auto-generated method stub
-
+		SecurityContextHolder.getContext().setAuthentication(
+				new UserAuthenticationImpl(user));
 	}
 
 	@Override
 	@Transactional
 	public void logout() {
-		// TODO Auto-generated method stub
-
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
 	@Override
@@ -51,14 +57,17 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 	@Override
 	@Transactional(readOnly = true)
 	public Set<Announcement> getAllUnread() {
-		// TODO Auto-generated method stub
-		return null;
+		List<AnnouncementInstance> ais = contentDao
+				.getUnreadAnnouncements(userUtil.getUser());
+		Set<Announcement> as = new HashSet<Announcement>();
+		for (AnnouncementInstance ai : ais)
+			as.add(ai.getAnnouncement());
+		return as;
 	}
 
 	@Override
 	@Transactional
 	public void markRead(Announcement a) {
-		// TODO Auto-generated method stub
+		contentDao.getAnnouncementInstance(a, userUtil.getUser()).markRead();
 	}
-
 }

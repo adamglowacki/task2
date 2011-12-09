@@ -92,6 +92,8 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
+	<bean id="userUtil" class="pl.edu.mimuw.ag291541.task2.util.UserUtilImpl" />
+
 	<bean id="daoUtilLibrary" class="pl.edu.mimuw.ag291541.task2.daoUtil.DaoUtilLibrary" />
 
 	<bean id="userDao"
@@ -109,5 +111,4 @@
 		class="pl.edu.mimuw.ag291541.task2.service.AnnouncementServiceImpl" />
 	<bean id="aclService"
 		class="pl.edu.mimuw.ag291541.task2.security.service.ACLServiceImpl" />
-
 </beans>
