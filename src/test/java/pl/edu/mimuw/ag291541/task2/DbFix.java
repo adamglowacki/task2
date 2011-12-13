@@ -13,6 +13,11 @@ import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
+import pl.edu.mimuw.ag291541.task2.exampletype.A;
+import pl.edu.mimuw.ag291541.task2.exampletype.B;
+import pl.edu.mimuw.ag291541.task2.exampletype.C;
+import pl.edu.mimuw.ag291541.task2.security.ACLRights;
+import pl.edu.mimuw.ag291541.task2.security.dao.AceDAO;
 import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
@@ -43,21 +48,27 @@ public class DbFix {
 	private static final String USER_TABLE = "secuser";
 	public Long apelDoKunegundyId;
 	public Long apelDoJerzegoId;
+	public Long kunegundaAAceId;
+	public Long kunegundaBAceId;
+	public C cObj;
+	public Long jerzyCObjAceId;
 
 	private SessionFactory sessionFactory;
 	private JdbcTemplate template;
 
 	private UserDAO userDao;
 	private ContentDAO contentDao;
+	private AceDAO aceDao;
 
 	// private Logger log = LoggerFactory.getLogger(DbFix.class);
 
 	public DbFix(JdbcTemplate template, SessionFactory factory,
-			UserDAO userDao, ContentDAO contentDao) {
+			UserDAO userDao, ContentDAO contentDao, AceDAO aceDao) {
 		this.template = template;
 		this.sessionFactory = factory;
 		this.userDao = userDao;
 		this.contentDao = contentDao;
+		this.aceDao = aceDao;
 	}
 
 	@Transactional
@@ -88,6 +99,13 @@ public class DbFix {
 				apelDoJerzegoId = i.getId();
 			else
 				assert false;
+		kunegundaBAceId = aceDao.createClassAce(kunegundaId, ACLRights.READ,
+				B.class.getCanonicalName()).getId();
+		kunegundaAAceId = aceDao.createClassAce(kunegundaId, ACLRights.WRITE,
+				A.class.getCanonicalName()).getId();
+		cObj = new C();
+		jerzyCObjAceId = aceDao
+				.createInstanceAce(jerzyId, ACLRights.READ, cObj).getId();
 	}
 
 	@Transactional

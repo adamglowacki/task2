@@ -50,6 +50,9 @@
 				<value>pl.edu.mimuw.ag291541.task2.entity.Announcement</value>
 				<value>pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance
 				</value>
+				<value>pl.edu.mimuw.ag291541.task2.security.entity.ClassAce</value>
+				<value>pl.edu.mimuw.ag291541.task2.security.entity.InstanceAce
+				</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -113,6 +116,10 @@
 
 	<bean id="contentDao"
 		class="pl.edu.mimuw.ag291541.task2.dao.hibernate.HibernateContentDAO">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="aceDao"
+		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateAceDAO">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 

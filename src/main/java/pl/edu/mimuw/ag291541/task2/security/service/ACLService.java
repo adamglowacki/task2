@@ -19,7 +19,10 @@ public interface ACLService {
 	 *         on <code>onWhat</code>.
 	 */
 	@Transactional(readOnly = true)
-	public boolean checkAcl(User who, ACLRights whatToDo, Object onWhat);
+	public boolean checkObjectAcl(User who, ACLRights whatToDo, Object onWhat);
+
+	@Transactional(readOnly = true)
+	public boolean checkCreationAcl(User who, Class<?> clazz);
 
 	/**
 	 * Grants the rights on all the hierarchy rooted in the class.

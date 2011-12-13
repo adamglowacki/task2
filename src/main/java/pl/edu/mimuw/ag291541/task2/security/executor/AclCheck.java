@@ -1,6 +1,5 @@
 package pl.edu.mimuw.ag291541.task2.security.executor;
 
-import org.hibernate.event.EventListeners;
 import org.hibernate.event.PreDeleteEvent;
 import org.hibernate.event.PreDeleteEventListener;
 import org.hibernate.event.PreInsertEvent;
@@ -12,30 +11,39 @@ import org.hibernate.event.PreUpdateEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+
+import pl.edu.mimuw.ag291541.task2.security.ACLRights;
+import pl.edu.mimuw.ag291541.task2.security.entity.User;
+import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
+import pl.edu.mimuw.ag291541.task2.security.service.ACLService;
+import pl.edu.mimuw.ag291541.task2.util.UserUtil;
 
 public class AclCheck implements PreUpdateEventListener,
 		PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener {
 	private static final long serialVersionUID = 1L;
 
 	@Autowired
-	private AnnotationSessionFactoryBean factory;
+	private ACLService aclService;
+	@Autowired
+	UserUtil userUtil;
 
 	private Logger log = LoggerFactory.getLogger(AclCheck.class);
 
 	@Override
 	public void onPreLoad(PreLoadEvent event) {
-		log.debug("onPreLoad: {}", event.getEntity());
+		User u = userUtil.getUser();
+		// TODO: change it into throwing an exception
+		if (u == null)
+			return;
+		if (!aclService.checkObjectAcl(u, ACLRights.READ, event.getEntity())) {
+			log.debug("Forbidding access.");
+			throw new ActionForbiddenException();
+		} else
+			log.debug("Access allowed.");
 	}
 
 	@Override
 	public boolean onPreInsert(PreInsertEvent event) {
-		EventListeners el = factory.getConfiguration().getEventListeners();
-		for (PreUpdateEventListener puel : el.getPreUpdateEventListeners())
-			log.debug("factory pre-update {}", puel);
-		for (PreDeleteEventListener pdel : el.getPreDeleteEventListeners())
-			log.debug("factory pre-delete {}", pdel);
-		log.debug("onPreInsert: {}", event.getEntity());
 		return false;
 	}
 

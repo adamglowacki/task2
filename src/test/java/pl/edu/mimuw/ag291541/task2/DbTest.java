@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
+import pl.edu.mimuw.ag291541.task2.security.dao.AceDAO;
 import pl.edu.mimuw.ag291541.task2.security.dao.UserDAO;
+import pl.edu.mimuw.ag291541.task2.security.service.ACLService;
 import pl.edu.mimuw.ag291541.task2.service.AnnouncementService;
 import pl.edu.mimuw.ag291541.task2.service.ContentService;
 
@@ -28,9 +30,13 @@ public abstract class DbTest {
 	@Autowired
 	protected ContentDAO contentDao;
 	@Autowired
+	protected AceDAO aceDao;
+	@Autowired
 	protected ContentService contentService;
 	@Autowired
 	protected AnnouncementService announcementService;
+	@Autowired
+	protected ACLService aclService;
 	@Autowired
 	private JdbcTemplate template;
 	@Autowired
@@ -41,7 +47,7 @@ public abstract class DbTest {
 	@Before
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void loadData() {
-		fix = new DbFix(template, factory, userDao, contentDao);
+		fix = new DbFix(template, factory, userDao, contentDao, aceDao);
 		log.debug("Started loading db fixture...");
 		fix.loadData();
 		log.debug("Db fixture loaded.");
