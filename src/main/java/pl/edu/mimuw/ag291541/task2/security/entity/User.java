@@ -29,7 +29,7 @@ public class User {
 	@NotNull
 	@Column(updatable = false)
 	private String surname;
-	@ManyToMany(mappedBy = "members", cascade = { CascadeType.ALL })
+	@ManyToMany(cascade = { CascadeType.ALL })
 	private Set<Group> groups = new HashSet<Group>();
 	@OneToMany(mappedBy = "receiver", cascade = { CascadeType.ALL })
 	private Set<AnnouncementInstance> announcements = new HashSet<AnnouncementInstance>();

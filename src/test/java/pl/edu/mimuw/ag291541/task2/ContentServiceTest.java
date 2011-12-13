@@ -8,6 +8,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,12 +90,39 @@ public class ContentServiceTest extends DbTest {
 		log.error("Uniqueness of content titles is not preserved.");
 	}
 
+	@Transactional
+	private void justDeleteContent(Content c) {
+		contentService.deleteContent(c);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private Content getContent(Long id) {
+		return contentService.getContent(id);
+	}
+
 	@Test
 	@Transactional
-	public void deleteContent() {
-		contentService.deleteContent(contentService.getContent(fix.gazetaId));
-		contentService.getContent(fix.gazetaId);
-		log.error("Deletion content failed.");
+	public void deleteContent() throws SecurityException,
+			IllegalStateException, RollbackException, HeuristicMixedException,
+			HeuristicRollbackException, SystemException {
+		justDeleteContent(contentService.getContent(fix.gazetaId));
+		Content gazeta = getContent(fix.gazetaId);
+		assertNull(gazeta);
+		log.info("Content deletion succeeded.");
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private Announcement getAnnouncement(Long id) {
+		return contentDao.getAnnouncement(id);
+	}
+
+	@Test
+	@Transactional
+	public void testDeleteAnnouncement() {
+		justDeleteContent(contentService.getAnnouncement(fix.apelId));
+		Announcement apel = getAnnouncement(fix.apelId);
+		assertNull(apel);
+		log.info("Announcement deleting succeeded.");
 	}
 
 	@Test

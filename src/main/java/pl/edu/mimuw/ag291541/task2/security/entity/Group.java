@@ -20,7 +20,7 @@ public class Group {
 	@NotNull
 	@Column(unique = true, updatable = false)
 	private String name;
-	@ManyToMany()
+	@ManyToMany(mappedBy = "groups")
 	private Set<User> members = new HashSet<User>();
 
 	public Group() {

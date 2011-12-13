@@ -29,7 +29,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@Override
 	@Transactional
 	public Group getGroup(Long id) {
-		return util.notNull(getHibernateTemplate().get(Group.class, id));
+		return getHibernateTemplate().get(Group.class, id);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@Override
 	@Transactional
 	public User getUser(Long id) {
-		return util.notNull(getHibernateTemplate().get(User.class, id));
+		return getHibernateTemplate().get(User.class, id);
 	}
 
 	@Override

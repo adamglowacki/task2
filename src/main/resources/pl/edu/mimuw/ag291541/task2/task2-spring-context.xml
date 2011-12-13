@@ -26,14 +26,15 @@
 		<property name="password" value="hibernate" />
 	</bean>
 
-	<!-- <bean id="eventLoggingAspect" class="pl.edu.mimuw.gtimoszuk.aspect.LoggingAspect"> -->
-	<!-- </bean> -->
+	<bean id="aclCheck" class="pl.edu.mimuw.ag291541.task2.security.executor.AclCheck" />
 
-	<!-- <bean id="interceptor" class="pl.edu.mimuw.gtimoszuk.interceptor.SampleInterceptor"> -->
-	<!-- </bean> -->
-
-	<!-- <bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener"> -->
-	<!-- </bean> -->
+	<bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener" />
+	<!-- <bean id="defaultPreInsertListener" class="org.hibernate.event.def.DefaultPreInsertEventListener" 
+		/> -->
+	<!-- <bean id="defaultPreUpdateListener" class="org.hibernate.event.def.DefaultPreUpdateEventListener" 
+		/> -->
+	<!-- <bean id="defaultPreDeleteListener" class="org.hibernate.event.def.DefaultPreDeleteEventListener" 
+		/> -->
 	<!-- -->
 	<!-- <bean id="customPreLoadListener" class="pl.edu.mimuw.gtimoszuk.listener.SamplePreLoadEventListener"> -->
 	<!-- </bean> -->
@@ -55,8 +56,8 @@
 			<value>
 				hibernate.default_schema=public
 				hibernate.hbm2ddl.auto=update
-				hibernate.id.new_generator_mappings=true
 				hibernate.show_sql=true
+				hibernate.id.new_generator_mappings=true
 				hibernate.format_sql=true
 				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 				hibernate.c3p0.min_size=5
@@ -65,19 +66,25 @@
 				hibernate.c3p0.max_statements=50
 			</value>
 		</property>
-		<!-- <property name="entityInterceptor"> -->
-		<!-- <ref bean="interceptor" /> -->
-		<!-- </property> -->
-		<!-- <property name="eventListeners"> -->
-		<!-- <map> -->
-		<!-- <entry key="pre-load"> -->
-		<!-- <list> -->
-		<!-- <ref bean="customPreLoadListener"/> -->
-		<!-- <ref bean="defaultPreLoadListener" /> -->
-		<!-- </list> -->
-		<!-- </entry> -->
-		<!-- </map> -->
-		<!-- </property> -->
+		<property name="eventListeners">
+			<map>
+				<entry key="pre-load">
+					<list>
+						<ref bean="defaultPreLoadListener" />
+						<ref bean="aclCheck" />
+					</list>
+				</entry>
+				<entry key="pre-insert">
+					<ref bean="aclCheck" />
+				</entry>
+				<entry key="pre-update">
+					<ref bean="aclCheck" />
+				</entry>
+				<entry key="pre-delete">
+					<ref bean="aclCheck" />
+				</entry>
+			</map>
+		</property>
 	</bean>
 
 	<bean id="transactionManager"
@@ -85,11 +92,14 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven />
 
 	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
 		<property name="allowCreate" value="true" />
 		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource" />
 	</bean>
 
 	<bean id="userUtil" class="pl.edu.mimuw.ag291541.task2.util.UserUtilImpl" />

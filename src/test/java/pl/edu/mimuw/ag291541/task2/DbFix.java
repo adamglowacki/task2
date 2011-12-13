@@ -3,6 +3,12 @@ package pl.edu.mimuw.ag291541.task2;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
+
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
@@ -30,18 +36,31 @@ public class DbFix {
 	public Long apelId;
 	public static final String apelTitle = "Cichy apel";
 	public static final String apelBody = "Bardzo proszę.";
+	private static final String ANNOUNCEMENT_INSTANCE_TABLE = "announcement_instance";
+	private static final String CONTENT_TABLE = "content";
+	private static final String GROUP_USER_TABLE = "secuser_secgroup";
+	private static final String GROUP_TABLE = "secgroup";
+	private static final String USER_TABLE = "secuser";
 	public Long apelDoKunegundyId;
 	public Long apelDoJerzegoId;
+
+	private SessionFactory sessionFactory;
+	private JdbcTemplate template;
 
 	private UserDAO userDao;
 	private ContentDAO contentDao;
 
-	public DbFix(UserDAO userDao, ContentDAO contentDao) {
+	// private Logger log = LoggerFactory.getLogger(DbFix.class);
+
+	public DbFix(JdbcTemplate template, SessionFactory factory,
+			UserDAO userDao, ContentDAO contentDao) {
+		this.template = template;
+		this.sessionFactory = factory;
 		this.userDao = userDao;
 		this.contentDao = contentDao;
 	}
 
-	// @Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
 	public void loadData() {
 		User kunegunda = userDao.createUser(kunegundaName, kunegundaSurname);
 		kunegundaId = kunegunda.getId();
@@ -71,17 +90,25 @@ public class DbFix {
 				assert false;
 	}
 
-	// @Transactional(propagation = Propagation.REQUIRES_NEW)
-	// public void removeData() {
-	// deleteAll(Group.class);
-	// deleteAll(Content.class);
-	// deleteAll(AnnouncementInstance.class);
-	// deleteAll(User.class);
-	// SecurityContextHolder.getContext().setAuthentication(null);
-	// }
-	//
-	// @Transactional
-	// private <T> void deleteAll(Class<T> clazz) {
-	// template.deleteAll(template.loadAll(clazz));
-	// }
+	@Transactional
+	public void removeData() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		Session s = sessionFactory.getCurrentSession();
+		s.flush();
+		deleteAllRawSql(ANNOUNCEMENT_INSTANCE_TABLE);
+		deleteAllRawSql(CONTENT_TABLE);
+		deleteAllRawSql(GROUP_USER_TABLE);
+		deleteAllRawSql(GROUP_TABLE);
+		deleteAllRawSql(USER_TABLE);
+	}
+
+	@Transactional
+	private <T> void deleteAllRawSql(String table) {
+		template.execute("DELETE FROM " + table);
+		// Query q = s.createSQLQuery("DELETE FROM " + table);
+		// log.debug("Deletion query to be executed: {}", q.getQueryString());
+		// q.executeUpdate();
+		// factory.getCurrentSession().createSQLQuery("DELETE FROM ?")
+		// .setString(0, table);
+	}
 }
