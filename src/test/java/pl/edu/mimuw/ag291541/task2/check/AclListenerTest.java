@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.edu.mimuw.ag291541.task2.DbFix;
 import pl.edu.mimuw.ag291541.task2.GenericTest;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
+import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
 
 public class AclListenerTest extends GenericTest {
 	private Logger log = LoggerFactory.getLogger(AclListenerTest.class);
@@ -43,8 +44,7 @@ public class AclListenerTest extends GenericTest {
 		announcementService.login(userDao.getUser(id));
 	}
 
-	@Test
-	// (expected = ActionForbiddenException.class)
+	@Test(expected = ActionForbiddenException.class)
 	public void readForbidden() {
 		executeInSeparateTransaction(new Executable() {
 			@Override
