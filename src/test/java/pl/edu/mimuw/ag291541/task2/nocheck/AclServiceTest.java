@@ -1,10 +1,12 @@
-package pl.edu.mimuw.ag291541.task2;
+package pl.edu.mimuw.ag291541.task2.nocheck;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.entity.Content;
@@ -14,6 +16,7 @@ import pl.edu.mimuw.ag291541.task2.security.entity.ClassAce;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
 public class AclServiceTest extends DbTest {
+	private Logger log = LoggerFactory.getLogger(AclServiceTest.class);
 
 	@Test
 	@Transactional
@@ -27,6 +30,7 @@ public class AclServiceTest extends DbTest {
 		assertTrue(ace.getCanonicalTypeName().equals(cn));
 		assertTrue(ace.getRightsType().equals(ACLRights.READ));
 		assertTrue(ace.getUser().equals(fix.kunegundaId));
+		log.info("Adding class ACE is ok.");
 	}
 
 	@Test
@@ -41,5 +45,6 @@ public class AclServiceTest extends DbTest {
 				anotherCObj));
 		assertTrue(aclService.checkObjectAcl(jerzy, ACLRights.READ, fix.cObj));
 		assertFalse(aclService.checkObjectAcl(jerzy, ACLRights.WRITE, fix.cObj));
+		log.info("Checking object ACL is ok.");
 	}
 }

@@ -8,10 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import pl.edu.mimuw.ag291541.task2.security.annotation.AclGuarded;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
 @Entity
 @Table(name = "announcement_instance")
+@AclGuarded
 public class AnnouncementInstance {
 	@GeneratedValue
 	@Id

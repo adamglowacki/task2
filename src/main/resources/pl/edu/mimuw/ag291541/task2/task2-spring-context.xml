@@ -122,6 +122,8 @@
 		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateAceDAO">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
+	<bean id="aclUtil"
+		class="pl.edu.mimuw.ag291541.task2.security.service.AclUtilImpl" />
 
 	<bean id="contentService" class="pl.edu.mimuw.ag291541.task2.service.ContentServiceImpl" />
 	<bean id="announcementService"

@@ -11,11 +11,14 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import pl.edu.mimuw.ag291541.task2.security.annotation.AclGuarded;
+
 @Entity
 @Table(name = "content")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "contenttype", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Content")
+@AclGuarded
 public class Content {
 	@GeneratedValue
 	@Id

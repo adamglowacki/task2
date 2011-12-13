@@ -22,13 +22,12 @@ public class InstanceAce {
 	private ACLRights rightsType;
 	@NotNull
 	@Column(name = "objecthashcode")
-	private Integer objectHashCode;
+	private Long objectHashCode;
 
 	public InstanceAce() {
 	}
 
-	public InstanceAce(Long user_id, ACLRights rightsType,
-			Integer objectHashCode) {
+	public InstanceAce(Long user_id, ACLRights rightsType, Long objectHashCode) {
 		super();
 		this.user_id = user_id;
 		this.rightsType = rightsType;
@@ -59,11 +58,11 @@ public class InstanceAce {
 		this.rightsType = rightsType;
 	}
 
-	public Integer getObjectHashCode() {
+	public Long getObjectHashCode() {
 		return objectHashCode;
 	}
 
-	public void setObjectHashCode(Integer objectHashCode) {
+	public void setObjectHashCode(Long objectHashCode) {
 		this.objectHashCode = objectHashCode;
 	}
 

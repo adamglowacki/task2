@@ -13,10 +13,13 @@ import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.dao.AceDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.ClassAce;
 import pl.edu.mimuw.ag291541.task2.security.entity.InstanceAce;
+import pl.edu.mimuw.ag291541.task2.security.service.AclUtil;
 
 public class HibernateAceDAO extends HibernateDaoSupport implements AceDAO {
 	@Autowired
 	DaoUtilLibrary daoUtil;
+	@Autowired
+	AclUtil aclUtil;
 
 	@Override
 	public ClassAce createClassAce(Long u, ACLRights rights, String sn) {
@@ -27,7 +30,7 @@ public class HibernateAceDAO extends HibernateDaoSupport implements AceDAO {
 
 	@Override
 	public InstanceAce createInstanceAce(Long u, ACLRights rights, Object o) {
-		InstanceAce a = new InstanceAce(u, rights, o.hashCode());
+		InstanceAce a = new InstanceAce(u, rights, aclUtil.getObjectId(o));
 		getHibernateTemplate().persist(a);
 		return a;
 	}
@@ -51,8 +54,11 @@ public class HibernateAceDAO extends HibernateDaoSupport implements AceDAO {
 
 	@Override
 	public InstanceAce getInstanceAce(Long u, Object instance) {
-		return daoUtil.uniqueOrNull(findByCriteria(InstanceAce.class, u,
-				Property.forName("objectHashCode").eq(instance.hashCode())));
+		return daoUtil.uniqueOrNull(findByCriteria(
+				InstanceAce.class,
+				u,
+				Property.forName("objectHashCode").eq(
+						aclUtil.getObjectId(instance))));
 	}
 
 	@Override

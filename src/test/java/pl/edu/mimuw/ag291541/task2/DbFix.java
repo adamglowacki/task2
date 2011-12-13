@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.dao.ContentDAO;
@@ -29,6 +29,9 @@ public class DbFix {
 	public static final String jerzyName = "Jerzy";
 	public static final String jerzySurname = "Jeż";
 	public Long jerzyId;
+	public static final String ernestName = "Ernest";
+	public static final String ernestSurname = "Głowacki";
+	public Long ernestId;
 	public static final int usersNumber = 2;
 	public static final String administratorzyName = "Administratorzy";
 	public Long administratorzyId;
@@ -46,14 +49,20 @@ public class DbFix {
 	private static final String GROUP_USER_TABLE = "secuser_secgroup";
 	private static final String GROUP_TABLE = "secgroup";
 	private static final String USER_TABLE = "secuser";
+	private static final String CLASS_ACE_TABLE = "classace";
+	private static final String INSTANCE_ACE_TABLE = "instanceace";
 	public Long apelDoKunegundyId;
 	public Long apelDoJerzegoId;
 	public Long kunegundaAAceId;
 	public Long kunegundaBAceId;
 	public C cObj;
 	public Long jerzyCObjAceId;
+	public Long kunegundaGazetaReadId;
+	public Long jerzyGazetaWriteId;
+	public Long ernestObjectWriteId;
 
 	private SessionFactory sessionFactory;
+	private PlatformTransactionManager txManager;
 	private JdbcTemplate template;
 
 	private UserDAO userDao;
@@ -63,9 +72,11 @@ public class DbFix {
 	// private Logger log = LoggerFactory.getLogger(DbFix.class);
 
 	public DbFix(JdbcTemplate template, SessionFactory factory,
-			UserDAO userDao, ContentDAO contentDao, AceDAO aceDao) {
+			PlatformTransactionManager txManager, UserDAO userDao,
+			ContentDAO contentDao, AceDAO aceDao) {
 		this.template = template;
 		this.sessionFactory = factory;
+		this.txManager = txManager;
 		this.userDao = userDao;
 		this.contentDao = contentDao;
 		this.aceDao = aceDao;
@@ -77,6 +88,8 @@ public class DbFix {
 		kunegundaId = kunegunda.getId();
 		User jerzy = userDao.createUser(jerzyName, jerzySurname);
 		jerzyId = jerzy.getId();
+		User ernest = userDao.createUser(ernestName, ernestSurname);
+		ernestId = ernest.getId();
 		Group administratorzy = userDao.createGroup(administratorzyName);
 		administratorzyId = administratorzy.getId();
 		Group czytacze = userDao.createGroup(czytaczeName);
@@ -106,15 +119,24 @@ public class DbFix {
 		cObj = new C();
 		jerzyCObjAceId = aceDao
 				.createInstanceAce(jerzyId, ACLRights.READ, cObj).getId();
+		kunegundaGazetaReadId = aceDao.createInstanceAce(kunegundaId,
+				ACLRights.READ, gazeta).getId();
+		jerzyGazetaWriteId = aceDao.createInstanceAce(jerzyId, ACLRights.WRITE,
+				gazeta).getId();
+		ernestObjectWriteId = aceDao.createClassAce(ernestId, ACLRights.WRITE,
+				Object.class.getCanonicalName()).getId();
 	}
 
 	@Transactional
 	public void removeData() {
 		SecurityContextHolder.getContext().setAuthentication(null);
-		Session s = sessionFactory.getCurrentSession();
-		s.flush();
+		// Session s = sessionFactory.getCurrentSession();
+		// s.flush();
+		txManager.getTransaction(null).flush();
 		deleteAllRawSql(ANNOUNCEMENT_INSTANCE_TABLE);
 		deleteAllRawSql(CONTENT_TABLE);
+		deleteAllRawSql(CLASS_ACE_TABLE);
+		deleteAllRawSql(INSTANCE_ACE_TABLE);
 		deleteAllRawSql(GROUP_USER_TABLE);
 		deleteAllRawSql(GROUP_TABLE);
 		deleteAllRawSql(USER_TABLE);

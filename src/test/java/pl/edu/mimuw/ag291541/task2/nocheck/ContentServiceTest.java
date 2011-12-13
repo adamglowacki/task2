@@ -1,4 +1,4 @@
-package pl.edu.mimuw.ag291541.task2;
+package pl.edu.mimuw.ag291541.task2.nocheck;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.edu.mimuw.ag291541.task2.DbFix;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
