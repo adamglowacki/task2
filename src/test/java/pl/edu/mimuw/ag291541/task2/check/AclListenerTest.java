@@ -1,5 +1,10 @@
 package pl.edu.mimuw.ag291541.task2.check;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +17,11 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import pl.edu.mimuw.ag291541.task2.DbFix;
 import pl.edu.mimuw.ag291541.task2.GenericTest;
+import pl.edu.mimuw.ag291541.task2.entity.Announcement;
+import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
+import pl.edu.mimuw.ag291541.task2.security.ACLRights;
+import pl.edu.mimuw.ag291541.task2.security.entity.User;
 import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
 
 @TransactionConfiguration(defaultRollback = false)
@@ -77,6 +86,46 @@ public class AclListenerTest extends GenericTest {
 				Content gazeta = contentService.getContent(fix.gazetaId);
 				gazeta.setTitle("Blah...");
 				contentService.updateContent(gazeta);
+			}
+		});
+	}
+
+	@Test
+	public void justSendAnnouncement() {
+		executeInSeparateTransaction(new Executable() {
+			@Override
+			public void execute() {
+				User kunegunda = userDao.getUser(fix.kunegundaId);
+				aclService.addClassAccess(Announcement.class, ACLRights.WRITE,
+						kunegunda);
+				aclService.addClassAccess(AnnouncementInstance.class,
+						ACLRights.WRITE, kunegunda);
+			}
+		});
+		executeInSeparateTransaction(new Executable() {
+			@Override
+			public void execute() {
+				User kunegunda = userDao.getUser(fix.kunegundaId);
+				login(kunegunda.getId());
+				Set<User> recipients = new HashSet<User>();
+				recipients.add(userDao.getUser(fix.jerzyId));
+				recipients.add(kunegunda);
+				announcementService.sendAnnouncement("Witajcie!",
+						"To jest bardzo ważne oświadczenie...", recipients);
+			}
+		});
+		executeInSeparateTransaction(new Executable() {
+			@Override
+			public void execute() {
+				User jerzy = userDao.getUser(fix.jerzyId);
+				login(jerzy.getId());
+				Set<Announcement> unread = announcementService
+						.getAllUnread(jerzy);
+				assertTrue(unread.size() == 2);
+				for (Announcement a : unread)
+					announcementService.markRead(a, jerzy);
+				unread = announcementService.getAllUnread(jerzy);
+				assertTrue(unread.size() == 0);
 			}
 		});
 	}

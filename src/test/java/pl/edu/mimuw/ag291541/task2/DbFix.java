@@ -112,6 +112,8 @@ public class DbFix {
 				apelDoJerzegoId = i.getId();
 			else
 				assert false;
+		aceDao.createInstanceAce(kunegundaId, ACLRights.READ, apel);
+		aceDao.createInstanceAce(jerzyId, ACLRights.READ, apel);
 		kunegundaBAceId = aceDao.createClassAce(kunegundaId, ACLRights.READ,
 				B.class.getCanonicalName()).getId();
 		kunegundaAAceId = aceDao.createClassAce(kunegundaId, ACLRights.WRITE,

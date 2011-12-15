@@ -27,6 +27,10 @@
 	</bean>
 
 	<bean id="aclCheck" class="pl.edu.mimuw.ag291541.task2.security.executor.AclCheck" />
+	<bean id="aclGrant" class="pl.edu.mimuw.ag291541.task2.security.executor.AclGrant" />
+
+	<bean id="duringProcessing"
+		class="pl.edu.mimuw.ag291541.task2.security.executor.DuringProcessingImpl" />
 
 	<bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener" />
 	<!-- <bean id="defaultPreInsertListener" class="org.hibernate.event.def.DefaultPreInsertEventListener" 
@@ -85,6 +89,9 @@
 				</entry>
 				<entry key="pre-delete">
 					<ref bean="aclCheck" />
+				</entry>
+				<entry key="post-commit-insert">
+					<ref bean="aclGrant" />
 				</entry>
 			</map>
 		</property>

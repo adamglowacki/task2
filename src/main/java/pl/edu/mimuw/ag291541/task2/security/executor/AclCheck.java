@@ -20,6 +20,7 @@ import pl.edu.mimuw.ag291541.task2.security.annotation.AclGuarded;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
 import pl.edu.mimuw.ag291541.task2.security.service.ACLService;
+import pl.edu.mimuw.ag291541.task2.security.service.AclUtil;
 import pl.edu.mimuw.ag291541.task2.util.UserUtil;
 
 public class AclCheck implements PreUpdateEventListener,
@@ -30,6 +31,10 @@ public class AclCheck implements PreUpdateEventListener,
 	private ACLService aclService;
 	@Autowired
 	UserUtil userUtil;
+	@Autowired
+	DuringProcessingSet duringAccessCheck;
+	@Autowired
+	AclUtil aclUtil;
 
 	@Autowired
 	PlatformTransactionManager txManager;
@@ -50,12 +55,12 @@ public class AclCheck implements PreUpdateEventListener,
 
 	@Override
 	public boolean onPreInsert(final PreInsertEvent event) {
-		log.debug("onPreInsert: {}", event.getEntity());
-		checkAccess(event.getEntity(), new CheckingAccess() {
+		final Object entity = event.getEntity();
+		log.debug("onPreInsert: {}", entity);
+		checkAccess(entity, new CheckingAccess() {
 			@Override
 			public void checkAccess(User u) {
-				if (!aclService.checkCreationAcl(u, event.getEntity()
-						.getClass()))
+				if (!aclService.checkCreationAcl(u, entity.getClass()))
 					throw new ActionForbiddenException();
 			}
 		});
@@ -92,8 +97,15 @@ public class AclCheck implements PreUpdateEventListener,
 			User loggedUser = userUtil.getUser();
 			// TODO: change it so that not logged users are also thrown with an
 			// exception
-			if (loggedUser != null)
-				exec.checkAccess(loggedUser);
+			if (loggedUser != null
+					&& !duringAccessCheck.isDuringAccessCheck(entity)) {
+				try {
+					duringAccessCheck.setDuringAccessCheck(entity);
+					exec.checkAccess(loggedUser);
+				} finally {
+					duringAccessCheck.clear(entity);
+				}
+			}
 
 		}
 	}

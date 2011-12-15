@@ -49,6 +49,10 @@ public class AnnouncementServiceTest extends DbTest {
 	@Test
 	@Transactional
 	public void sendAnnouncement() {
+		/*
+		 * Here we do not log in as anybody so the privileges are not granted by
+		 * the listener.
+		 */
 		Set<User> recipients = new HashSet<User>();
 		User kunegunda = userDao.getUser(fix.kunegundaId);
 		User jerzy = userDao.getUser(fix.jerzyId);
