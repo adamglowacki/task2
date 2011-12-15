@@ -82,16 +82,16 @@
 					</list>
 				</entry>
 				<entry key="pre-insert">
-					<ref bean="aclCheck" />
+					<list>
+						<ref bean="aclCheck" />
+						<ref bean="aclGrant" />
+					</list>
 				</entry>
 				<entry key="pre-update">
 					<ref bean="aclCheck" />
 				</entry>
 				<entry key="pre-delete">
 					<ref bean="aclCheck" />
-				</entry>
-				<entry key="post-commit-insert">
-					<ref bean="aclGrant" />
 				</entry>
 			</map>
 		</property>
