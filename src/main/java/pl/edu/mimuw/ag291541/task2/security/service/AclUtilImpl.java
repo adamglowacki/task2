@@ -12,9 +12,11 @@ public class AclUtilImpl implements AclUtil {
 	@Override
 	public Long getObjectId(Object o) {
 		try {
-			Field idField = o.getClass().getField(ID_FIELD);
-			if (Long.class.isAssignableFrom(idField.getType()))
-				return idField.getLong(o);
+			Field idField = o.getClass().getDeclaredField(ID_FIELD);
+			if (Long.class.isAssignableFrom(idField.getType())) {
+				idField.setAccessible(true);
+				return (Long) idField.get(o);
+			}
 		} catch (NoSuchFieldException e) {
 			log.debug("No id field has been found.");
 		} catch (Exception e) {

@@ -56,9 +56,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Set<Announcement> getAllUnread() {
+	public Set<Announcement> getAllUnread(User user) {
 		List<AnnouncementInstance> ais = contentDao
-				.getUnreadAnnouncements(userUtil.getUser());
+				.getUnreadAnnouncements(user);
 		Set<Announcement> as = new HashSet<Announcement>();
 		for (AnnouncementInstance ai : ais)
 			as.add(ai.getAnnouncement());
@@ -67,7 +67,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
 	@Override
 	@Transactional
-	public void markRead(Announcement a) {
-		contentDao.getAnnouncementInstance(a, userUtil.getUser()).markRead();
+	public void markRead(Announcement a, User u) {
+		contentDao.getAnnouncementInstance(a, u).markRead();
 	}
 }

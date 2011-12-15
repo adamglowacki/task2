@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.entity.Content;
+import pl.edu.mimuw.ag291541.task2.exampletype.A;
+import pl.edu.mimuw.ag291541.task2.exampletype.B;
 import pl.edu.mimuw.ag291541.task2.exampletype.C;
 import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.entity.ClassAce;
@@ -46,5 +48,18 @@ public class AclServiceTest extends DbTest {
 		assertTrue(aclService.checkObjectAcl(jerzy, ACLRights.READ, fix.cObj));
 		assertFalse(aclService.checkObjectAcl(jerzy, ACLRights.WRITE, fix.cObj));
 		log.info("Checking object ACL is ok.");
+	}
+
+	@Test
+	@Transactional
+	public void checkCreationAcl() {
+		User kunegunda = userDao.getUser(fix.kunegundaId);
+		User jerzy = userDao.getUser(fix.jerzyId);
+		User ernest = userDao.getUser(fix.ernestId);
+		assertTrue(aclService.checkCreationAcl(kunegunda, A.class));
+		assertTrue(aclService.checkCreationAcl(kunegunda, B.class));
+		assertTrue(aclService.checkCreationAcl(kunegunda, C.class));
+		assertFalse(aclService.checkCreationAcl(jerzy, C.class));
+		assertTrue(aclService.checkCreationAcl(ernest, A.class));
 	}
 }

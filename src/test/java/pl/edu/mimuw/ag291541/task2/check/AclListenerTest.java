@@ -5,14 +5,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import pl.edu.mimuw.ag291541.task2.DbFix;
 import pl.edu.mimuw.ag291541.task2.GenericTest;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
 import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
 
+@TransactionConfiguration(defaultRollback = false)
 public class AclListenerTest extends GenericTest {
 	private Logger log = LoggerFactory.getLogger(AclListenerTest.class);
 
@@ -22,7 +25,6 @@ public class AclListenerTest extends GenericTest {
 				aceDao);
 		executeInSeparateTransaction(new Executable() {
 			@Override
-			@Transactional
 			public void execute() {
 				fix.loadData();
 			}
@@ -33,7 +35,6 @@ public class AclListenerTest extends GenericTest {
 	public void removeData() {
 		executeInSeparateTransaction(new Executable() {
 			@Override
-			@Transactional
 			public void execute() {
 				fix.removeData();
 			}
@@ -48,7 +49,6 @@ public class AclListenerTest extends GenericTest {
 	public void readForbidden() {
 		executeInSeparateTransaction(new Executable() {
 			@Override
-			@Transactional
 			public void execute() {
 				login(fix.kunegundaId);
 				contentService.getContent(fix.apelId);
@@ -60,7 +60,6 @@ public class AclListenerTest extends GenericTest {
 	public void readAllowed() {
 		executeInSeparateTransaction(new Executable() {
 			@Override
-			@Transactional
 			public void execute() {
 				login(fix.kunegundaId);
 				contentService.getContent(fix.gazetaId);
@@ -69,22 +68,26 @@ public class AclListenerTest extends GenericTest {
 		log.info("Reading allowed content is ok.");
 	}
 
-	@Test
+	@Test(expected = ActionForbiddenException.class)
 	public void writeForbidden() {
-		login(fix.kunegundaId);
-		Content gazeta = contentService.getContent(fix.gazetaId);
-		gazeta.setTitle("Blah...");
+		executeInSeparateTransaction(new Executable() {
+			@Override
+			public void execute() {
+				login(fix.kunegundaId);
+				Content gazeta = contentService.getContent(fix.gazetaId);
+				gazeta.setTitle("Blah...");
+				contentService.updateContent(gazeta);
+			}
+		});
 	}
 
 	private void executeInSeparateTransaction(Executable exec) {
-		TransactionStatus txStatus = txManager.getTransaction(null);
-		// Session s = factory.openSession();
-		// Transaction t = s.beginTransaction();
+		TransactionDefinition txDef = new DefaultTransactionDefinition(
+				DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		TransactionStatus txStatus = txManager.getTransaction(txDef);
 		exec.execute();
 		txManager.getTransaction(null).flush();
 		txManager.commit(txStatus);
-		// t.commit();
-		// s.close();
 	}
 
 	private interface Executable {

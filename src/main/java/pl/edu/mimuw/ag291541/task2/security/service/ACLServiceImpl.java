@@ -13,6 +13,7 @@ public class ACLServiceImpl implements ACLService {
 	@Autowired
 	AceDAO aceDao;
 
+	@Transactional
 	private boolean checkOnSuperclasses(User u, ACLRights r, Class<?> c) {
 		ClassAce ace = null;
 		while (c != null) {
@@ -38,6 +39,7 @@ public class ACLServiceImpl implements ACLService {
 	}
 
 	@Override
+	@Transactional
 	public boolean checkCreationAcl(User who, Class<?> clazz) {
 		return checkOnSuperclasses(who, ACLRights.WRITE, clazz);
 	}

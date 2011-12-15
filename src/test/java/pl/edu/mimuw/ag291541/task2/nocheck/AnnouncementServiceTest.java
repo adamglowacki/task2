@@ -9,12 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
@@ -23,8 +20,6 @@ import pl.edu.mimuw.ag291541.task2.security.UserAuthenticationImpl;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
-@ContextConfiguration(locations = { "classpath:pl/edu/mimuw/ag291541/task2/task2-spring-context.xml" })
-@RunWith(SpringJUnit4ClassRunner.class)
 public class AnnouncementServiceTest extends DbTest {
 	private Logger log = LoggerFactory.getLogger(ContentServiceTest.class);
 
@@ -104,8 +99,8 @@ public class AnnouncementServiceTest extends DbTest {
 	@Transactional
 	public void getAllUnread() {
 		User kunegunda = userDao.getUser(fix.kunegundaId);
-		announcementService.login(kunegunda);
-		Set<Announcement> unread = announcementService.getAllUnread();
+		// announcementService.login(kunegunda);
+		Set<Announcement> unread = announcementService.getAllUnread(kunegunda);
 		assertEquals(unread.size(), 1);
 		Announcement a = contentService.getAnnouncement(fix.apelId);
 		assertTrue(unread.contains(a));
@@ -125,12 +120,12 @@ public class AnnouncementServiceTest extends DbTest {
 	@Test
 	@Transactional
 	public void markRead() {
-		announcementService.login(userDao.getUser(fix.kunegundaId));
+		User kunegunda = userDao.getUser(fix.kunegundaId);
 		Announcement a = contentDao.getAnnouncement(fix.apelId);
 		AnnouncementInstance ai = contentDao
 				.getAnnouncementInstance(fix.apelDoKunegundyId);
 		assertFalse(ai.isReadStatus());
-		announcementService.markRead(a);
+		announcementService.markRead(a, kunegunda);
 		assertTrue(ai.isReadStatus());
 		log.info("Marking announcement read seems to be ok.");
 	}

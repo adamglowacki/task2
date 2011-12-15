@@ -56,19 +56,23 @@ public interface AnnouncementService {
 			Collection<Group> recipients);
 
 	/**
-	 * Retrieves all the announcements that are not already read by the logged
-	 * in user.
+	 * Retrieves all the announcements that are not already read by given user.
+	 * 
+	 * @param user
+	 *            The receiver.
 	 * 
 	 * @return Set of all pending (not read) announcements whose recipient is
-	 *         the logged in user.
+	 *         <code>user</code>.
 	 */
-	public Set<Announcement> getAllUnread();
+	public Set<Announcement> getAllUnread(User user);
 
 	/**
 	 * Marks the announcement as already read (with current timestamp).
 	 * 
 	 * @param a
-	 *            An announcement that has been just read by the logged in user.
+	 *            An announcement that has been just read by <code>user</code>.
+	 * @param u
+	 *            The receiver of <code>a</code>.
 	 */
-	public void markRead(Announcement a);
+	public void markRead(Announcement a, User user);
 }
