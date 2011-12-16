@@ -44,6 +44,9 @@ public class DbFix {
 	public Long apelId;
 	public static final String apelTitle = "Cichy apel";
 	public static final String apelBody = "Bardzo proszę.";
+	public Long zakazaneId;
+	public static final String zakazaneTitle = "Zakazane";
+	public static final String zakazaneBody = "Tego nikt nie przeczyta.";
 	private static final String ANNOUNCEMENT_INSTANCE_TABLE = "announcement_instance";
 	private static final String CONTENT_TABLE = "content";
 	private static final String GROUP_USER_TABLE = "secuser_secgroup";
@@ -127,13 +130,14 @@ public class DbFix {
 				gazeta).getId();
 		ernestObjectWriteId = aceDao.createClassAce(ernestId, ACLRights.WRITE,
 				Object.class.getCanonicalName()).getId();
+		Content zakazane = contentDao
+				.createContent(zakazaneTitle, zakazaneBody);
+		zakazaneId = zakazane.getId();
 	}
 
 	@Transactional
 	public void removeData() {
 		SecurityContextHolder.getContext().setAuthentication(null);
-		// Session s = sessionFactory.getCurrentSession();
-		// s.flush();
 		txManager.getTransaction(null).flush();
 		deleteAllRawSql(ANNOUNCEMENT_INSTANCE_TABLE);
 		deleteAllRawSql(CONTENT_TABLE);
@@ -147,10 +151,5 @@ public class DbFix {
 	@Transactional
 	private <T> void deleteAllRawSql(String table) {
 		template.execute("DELETE FROM " + table);
-		// Query q = s.createSQLQuery("DELETE FROM " + table);
-		// log.debug("Deletion query to be executed: {}", q.getQueryString());
-		// q.executeUpdate();
-		// factory.getCurrentSession().createSQLQuery("DELETE FROM ?")
-		// .setString(0, table);
 	}
 }

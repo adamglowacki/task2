@@ -9,10 +9,23 @@ public class AclUtilImpl implements AclUtil {
 	private static final String ID_FIELD = "id";
 	private Logger log = LoggerFactory.getLogger(AclUtilImpl.class);
 
+	private Field getDeclaredOrInheritedField(Class<?> clazz, String name)
+			throws NoSuchFieldException {
+		if (clazz != null) {
+			try {
+				Field f = clazz.getDeclaredField(name);
+				return f;
+			} catch (NoSuchFieldException e) {
+				return getDeclaredOrInheritedField(clazz.getSuperclass(), name);
+			}
+		}
+		throw new NoSuchFieldException();
+	}
+
 	@Override
 	public Long getObjectId(Object o) {
 		try {
-			Field idField = o.getClass().getDeclaredField(ID_FIELD);
+			Field idField = getDeclaredOrInheritedField(o.getClass(), ID_FIELD);
 			if (Long.class.isAssignableFrom(idField.getType())) {
 				idField.setAccessible(true);
 				return (Long) idField.get(o);

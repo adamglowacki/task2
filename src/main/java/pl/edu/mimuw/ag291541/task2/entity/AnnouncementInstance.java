@@ -83,4 +83,37 @@ public class AnnouncementInstance {
 		setReadDate(Calendar.getInstance());
 		setReadStatus(true);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((announcement == null) ? 0 : announcement.hashCode());
+		result = prime * result
+				+ ((receiver == null) ? 0 : receiver.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof AnnouncementInstance))
+			return false;
+		AnnouncementInstance other = (AnnouncementInstance) obj;
+		if (announcement == null) {
+			if (other.announcement != null)
+				return false;
+		} else if (!announcement.equals(other.announcement))
+			return false;
+		if (receiver == null) {
+			if (other.receiver != null)
+				return false;
+		} else if (!receiver.equals(other.receiver))
+			return false;
+		return true;
+	}
 }

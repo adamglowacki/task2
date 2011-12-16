@@ -35,14 +35,17 @@ public class HibernateContentDAO extends HibernateDaoSupport implements
 	public Announcement createAnnouncement(String title, String body,
 			Collection<User> recipients) {
 		Announcement a = new Announcement(title, body);
+		// a.setId((Long) getHibernateTemplate().save(a));
+		getHibernateTemplate().saveOrUpdate(a);
 		Set<User> distinctRecipients = new HashSet<User>(recipients);
-		Set<AnnouncementInstance> insts = new HashSet<AnnouncementInstance>();
 		for (User r : distinctRecipients) {
 			AnnouncementInstance i = new AnnouncementInstance(r, a);
-			insts.add(i);
+			// i.setId((Long) getHibernateTemplate().save(i));
+			getHibernateTemplate().saveOrUpdate(i);
+			a.getInstances().add(i);
 		}
-		a.setInstances(insts);
-		getHibernateTemplate().persist(a);
+		getHibernateTemplate().saveOrUpdate(a);
+		// getHibernateTemplate().persist(a);
 		return a;
 	}
 

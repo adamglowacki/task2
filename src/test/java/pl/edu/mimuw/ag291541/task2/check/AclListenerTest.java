@@ -60,7 +60,7 @@ public class AclListenerTest extends GenericTest {
 			@Override
 			public void execute() {
 				login(fix.kunegundaId);
-				contentService.getContent(fix.apelId);
+				contentService.getContent(fix.zakazaneId);
 			}
 		});
 	}
@@ -131,12 +131,26 @@ public class AclListenerTest extends GenericTest {
 	}
 
 	private void executeInSeparateTransaction(Executable exec) {
+
 		TransactionDefinition txDef = new DefaultTransactionDefinition(
 				DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		TransactionStatus txStatus = txManager.getTransaction(txDef);
+		// Session s = factory.openSession();
+		// Transaction tx = s.beginTransaction();
+		// try {
 		exec.execute();
-		txManager.getTransaction(null).flush();
+		// tx.commit();
+		// } catch (RuntimeException e) {
+		// tx.rollback();
+		// throw e;
+		// }
+		// s.close();
+		// txStatus.flush();
 		txManager.commit(txStatus);
+		// } catch (RuntimeException e) {
+		// txManager.rollback(txStatus);
+		// throw e;
+		// }
 	}
 
 	private interface Executable {
