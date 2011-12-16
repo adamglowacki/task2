@@ -108,13 +108,16 @@ public class DbFix {
 		Announcement apel = contentDao.createAnnouncement(apelTitle, apelBody,
 				apelRecipients);
 		apelId = apel.getId();
-		for (AnnouncementInstance i : apel.getInstances())
+		for (AnnouncementInstance i : apel.getInstances()) {
 			if (i.getReceiver().equals(kunegunda))
 				apelDoKunegundyId = i.getId();
 			else if (i.getReceiver().equals(jerzy))
 				apelDoJerzegoId = i.getId();
 			else
 				assert false;
+			aceDao.createInstanceAce(i.getReceiver().getId(), ACLRights.WRITE,
+					i);
+		}
 		aceDao.createInstanceAce(kunegundaId, ACLRights.READ, apel);
 		aceDao.createInstanceAce(jerzyId, ACLRights.READ, apel);
 		kunegundaBAceId = aceDao.createClassAce(kunegundaId, ACLRights.READ,

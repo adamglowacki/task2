@@ -8,11 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,9 +98,7 @@ public class ContentServiceTest extends DbTest {
 
 	@Test
 	@Transactional
-	public void deleteContent() throws SecurityException,
-			IllegalStateException, RollbackException, HeuristicMixedException,
-			HeuristicRollbackException, SystemException {
+	public void deleteContent() {
 		justDeleteContent(contentService.getContent(fix.gazetaId));
 		Content gazeta = getContent(fix.gazetaId);
 		assertNull(gazeta);
@@ -119,7 +112,7 @@ public class ContentServiceTest extends DbTest {
 
 	@Test
 	@Transactional
-	public void testDeleteAnnouncement() {
+	public void deleteAnnouncement() {
 		justDeleteContent(contentService.getAnnouncement(fix.apelId));
 		Announcement apel = getAnnouncement(fix.apelId);
 		assertNull(apel);
@@ -133,6 +126,7 @@ public class ContentServiceTest extends DbTest {
 		Set<Content> expected = new HashSet<Content>();
 		expected.add(contentService.getContent(fix.apelId));
 		expected.add(contentService.getContent(fix.gazetaId));
+		expected.add(contentService.getContent(fix.zakazaneId));
 		assertEquals(got, expected);
 		log.info("Getting all the contents is ok.");
 	}

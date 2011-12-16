@@ -3,6 +3,7 @@ package pl.edu.mimuw.ag291541.task2.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -13,7 +14,7 @@ import pl.edu.mimuw.ag291541.task2.security.annotation.AclGuarded;
 @DiscriminatorValue("Announcement")
 @AclGuarded
 public class Announcement extends Content {
-	@OneToMany(mappedBy = "announcement")
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "announcement")
 	private Set<AnnouncementInstance> instances = new HashSet<AnnouncementInstance>();
 
 	public Announcement() {
