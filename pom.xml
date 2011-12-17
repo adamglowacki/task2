@@ -9,6 +9,7 @@
 	<name>Hibernate Task 2</name>
 
 	<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<compiler.version>2.3.2</compiler.version>
 		<hibernate.version>3.6.8.Final</hibernate.version>
 		<hibernateValidator.version>4.2.0.Final</hibernateValidator.version>

@@ -38,7 +38,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public Group getGroup(String name) {
-		return util.unique(getHibernateTemplate().findByNamedParam(
+		return util.<Group>unique(getHibernateTemplate().findByNamedParam(
 				HQL_GET_GROUP_BY_NAME, "name", name));
 	}
 
@@ -73,7 +73,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@SuppressWarnings("unchecked")
 	@Transactional
 	public User getUser(String name, String surname) {
-		return util.unique(getHibernateTemplate().findByNamedParam(
+		return util.<User>unique(getHibernateTemplate().findByNamedParam(
 				HQL_GET_USER_BY_NAME_AND_SURNAME,
 				new String[] { "name", "surname" },
 				new String[] { name, surname }));
