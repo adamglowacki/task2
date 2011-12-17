@@ -1,62 +1,33 @@
 package pl.edu.mimuw.ag291541.task2.check;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import pl.edu.mimuw.ag291541.task2.DbFix;
-import pl.edu.mimuw.ag291541.task2.GenericTest;
+import pl.edu.mimuw.ag291541.task2.ManualTransactionTest;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
 import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
-import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
+import pl.edu.mimuw.ag291541.task2.security.executor.exception.AccessForbiddenException;
+import pl.edu.mimuw.ag291541.task2.util.Executable;
 
-@TransactionConfiguration(defaultRollback = false)
-public class AclListenerTest extends GenericTest {
+public class AclListenerTest extends ManualTransactionTest {
+	private static final String NEW_ANNOUNCEMENT_BODY = "To jest bardzo ważne oświadczenie...";
+	private static final String NEW_ANNOUNCEMENT_TITLE = "Witajcie!";
 	private Logger log = LoggerFactory.getLogger(AclListenerTest.class);
 
-	@Before
-	public void loadData() {
-		fix = new DbFix(template, factory, txManager, userDao, contentDao,
-				aceDao);
-		executeInSeparateTransaction(new Executable() {
-			@Override
-			public void execute() {
-				fix.loadData();
-			}
-		});
-	}
-
-	@After
-	public void removeData() {
-		executeInSeparateTransaction(new Executable() {
-			@Override
-			public void execute() {
-				fix.removeData();
-			}
-		});
-	}
-
-	private void login(Long id) {
-		announcementService.login(userDao.getUser(id));
-	}
-
-	@Test(expected = ActionForbiddenException.class)
+	@Test(expected = AccessForbiddenException.class)
 	public void readForbidden() {
-		executeInSeparateTransaction(new Executable() {
+		executeInTransaction(new Executable() {
 			@Override
 			public void execute() {
 				login(fix.kunegundaId);
@@ -67,7 +38,7 @@ public class AclListenerTest extends GenericTest {
 
 	@Test
 	public void readAllowed() {
-		executeInSeparateTransaction(new Executable() {
+		executeInTransaction(new Executable() {
 			@Override
 			public void execute() {
 				login(fix.kunegundaId);
@@ -77,9 +48,9 @@ public class AclListenerTest extends GenericTest {
 		log.info("Reading allowed content is ok.");
 	}
 
-	@Test(expected = ActionForbiddenException.class)
+	@Test(expected = AccessForbiddenException.class)
 	public void writeForbidden() {
-		executeInSeparateTransaction(new Executable() {
+		executeInTransaction(new Executable() {
 			@Override
 			public void execute() {
 				login(fix.kunegundaId);
@@ -92,17 +63,19 @@ public class AclListenerTest extends GenericTest {
 
 	@Test
 	public void justSendAnnouncement() {
-		executeInSeparateTransaction(new Executable() {
-			@Override
-			public void execute() {
-				User kunegunda = userDao.getUser(fix.kunegundaId);
-				aclService.addClassAccess(Announcement.class, ACLRights.WRITE,
-						kunegunda);
-				aclService.addClassAccess(AnnouncementInstance.class,
-						ACLRights.WRITE, kunegunda);
-			}
-		});
-		executeInSeparateTransaction(new Executable() {
+		/* Firstly make kunegunda more powerful. */
+		makeKunegundaPowerfulEnoughToSend();
+		/* Send an announcement from kunegunda to herself and jerzy. */
+		sendFromKunegundaToJerzyAndKunegunda(NEW_ANNOUNCEMENT_TITLE,
+				NEW_ANNOUNCEMENT_BODY);
+		/* As jerzy read all the unread announcements addressed to him. */
+		readAndMarkRead(fix.jerzyId, 2);
+		log.info("Sending and reading an announcement was successful.");
+	}
+
+	private void sendFromKunegundaToJerzyAndKunegunda(final String title,
+			final String body) {
+		executeInTransaction(new Executable() {
 			@Override
 			public void execute() {
 				User kunegunda = userDao.getUser(fix.kunegundaId);
@@ -110,50 +83,240 @@ public class AclListenerTest extends GenericTest {
 				Set<User> recipients = new HashSet<User>();
 				recipients.add(userDao.getUser(fix.jerzyId));
 				recipients.add(kunegunda);
-				announcementService.sendAnnouncement("Witajcie!",
-						"To jest bardzo ważne oświadczenie...", recipients);
+				announcementService.sendAnnouncement(title, body, recipients);
 			}
 		});
-		executeInSeparateTransaction(new Executable() {
+	}
+
+	private void readAndMarkRead(final Long userId, final int expectedUnreadSize) {
+		executeInTransaction(new Executable() {
 			@Override
 			public void execute() {
-				User jerzy = userDao.getUser(fix.jerzyId);
-				login(jerzy.getId());
+				login(userId);
+				User user = userDao.getUser(userId);
 				Set<Announcement> unread = announcementService
-						.getAllUnread(jerzy);
-				assertTrue(unread.size() == 2);
+						.getAllUnread(user);
+				assert (unread.size() == expectedUnreadSize);
 				for (Announcement a : unread)
-					announcementService.markRead(a, jerzy);
-				unread = announcementService.getAllUnread(jerzy);
+					announcementService.markRead(a, user);
+				unread = announcementService.getAllUnread(user);
 				assertTrue(unread.size() == 0);
 			}
 		});
 	}
 
-	private void executeInSeparateTransaction(Executable exec) {
-
-		TransactionDefinition txDef = new DefaultTransactionDefinition(
-				DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		TransactionStatus txStatus = txManager.getTransaction(txDef);
-		// Session s = factory.openSession();
-		// Transaction tx = s.beginTransaction();
-		// try {
-		exec.execute();
-		// tx.commit();
-		// } catch (RuntimeException e) {
-		// tx.rollback();
-		// throw e;
-		// }
-		// s.close();
-		// txStatus.flush();
-		txManager.commit(txStatus);
-		// } catch (RuntimeException e) {
-		// txManager.rollback(txStatus);
-		// throw e;
-		// }
+	private void getContentAsUser(final Long userId, final String title) {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				login(userId);
+				contentService.getContent(title);
+			}
+		});
 	}
 
-	private interface Executable {
-		public void execute();
+	private void getAllContentsAsUser(final Long userId) {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				login(userId);
+				contentService.getAllContents();
+			}
+		});
+	}
+
+	private void addInstanceToAnnouncement(final Long loggedUserId,
+			final String title, final Long receiverId) {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				login(loggedUserId);
+				Announcement announcement = contentService
+						.getAnnouncement(title);
+				AnnouncementInstance instance = contentDao
+						.createAnnouncementInstance(
+								userDao.getUser(loggedUserId), announcement);
+				announcement.getInstances().add(instance);
+			}
+		});
+	}
+
+	private void makeKunegundaPowerfulEnoughToSend() {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				logout();
+				User kunegunda = userDao.getUser(fix.kunegundaId);
+				aclService.addClassAccess(Announcement.class, ACLRights.WRITE,
+						kunegunda);
+				aclService.addClassAccess(AnnouncementInstance.class,
+						ACLRights.WRITE, kunegunda);
+			}
+		});
+	}
+
+	private void revokeOnAnnouncementInstance(final Long recipientId,
+			final ACLRights rights, final String title) {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				logout();
+				Announcement a = contentService.getAnnouncement(title);
+				User recipient = userDao.getUser(recipientId);
+				AnnouncementInstance desired = null;
+				for (AnnouncementInstance ai : a.getInstances()) {
+					if (ai.getReceiver().equals(recipient)) {
+						desired = ai;
+						break;
+					}
+				}
+				assertNotNull(desired);
+				aclService.revokeInstanceAccess(desired, rights, recipient);
+			}
+		});
+	}
+
+	/**
+	 * Revokes on the instance, its class and all its subclasses.
+	 * 
+	 * @param userId
+	 *            From whom the privileges shall be revoked.
+	 * @param rights
+	 *            What shall be revoked.
+	 * @param title
+	 *            A title of the announcement.
+	 */
+	private void revokeOnAnnouncement(final Long userId,
+			final ACLRights rights, final String title) {
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				logout();
+				Announcement a = contentService.getAnnouncement(title);
+				User user = userDao.getUser(userId);
+				aclService.revokeInstanceAccess(a, rights, user);
+				Class<?> clazz = a.getClass();
+				while (clazz != null) {
+					aclService.revokeClassAccess(clazz, rights, user);
+					clazz = clazz.getSuperclass();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Send and revoke WRITE privilege on announcement instance from recipient.
+	 */
+	@Test
+	public void revokeWriteFromRecipient() {
+		makeKunegundaPowerfulEnoughToSend();
+		/* Send. */
+		sendFromKunegundaToJerzyAndKunegunda(NEW_ANNOUNCEMENT_TITLE,
+				NEW_ANNOUNCEMENT_BODY);
+		/* Revoke. */
+		revokeOnAnnouncementInstance(fix.jerzyId, ACLRights.WRITE,
+				NEW_ANNOUNCEMENT_TITLE);
+		/* Try to read and mark. */
+		try {
+			readAndMarkRead(fix.jerzyId, 2);
+			assertTrue(false);
+		} catch (AccessForbiddenException e) {
+			log.info("Access control runs ok when revoked write on announcement instance from recipient.");
+		}
+	}
+
+	/**
+	 * Send and revoke READ privilege on announcement from recipient.
+	 */
+	@Test
+	public void revokeReadFromRecipient() {
+		makeKunegundaPowerfulEnoughToSend();
+		/* Send. */
+		sendFromKunegundaToJerzyAndKunegunda(NEW_ANNOUNCEMENT_TITLE,
+				NEW_ANNOUNCEMENT_BODY);
+		/* Revoke. */
+		revokeOnAnnouncement(fix.jerzyId, ACLRights.READ,
+				NEW_ANNOUNCEMENT_TITLE);
+		/* Try to read and mark. */
+		try {
+			readAndMarkRead(fix.jerzyId, 2);
+			assertTrue(false);
+		} catch (AccessForbiddenException e) {
+			log.info("Access control runs ok when revoked read on announcement from recipient.");
+		}
+	}
+
+	/**
+	 * Create a content and revoke READ on the content from the creator.
+	 */
+	@Test
+	public void revokeReadFromCreator() {
+		makeKunegundaPowerfulEnoughToSend();
+		sendFromKunegundaToJerzyAndKunegunda(NEW_ANNOUNCEMENT_TITLE,
+				NEW_ANNOUNCEMENT_BODY);
+		revokeOnAnnouncement(fix.kunegundaId, ACLRights.READ,
+				NEW_ANNOUNCEMENT_TITLE);
+		try {
+			getContentAsUser(fix.kunegundaId, NEW_ANNOUNCEMENT_TITLE);
+			assertTrue(false);
+		} catch (AccessForbiddenException e) {
+			log.info("Access control runs ok when revoked read on content and attempted to get it.");
+		}
+	}
+
+	/**
+	 * Tries to get all contents having read on a whole class.
+	 */
+	@Test
+	public void getAllWithPrivilege() {
+		/* Grant kunegunda with READ on content class. */
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				aclService.addClassAccess(Content.class, ACLRights.READ,
+						userDao.getUser(fix.kunegundaId));
+			}
+		});
+		getAllContentsAsUser(fix.kunegundaId);
+	}
+
+	/**
+	 * Tries to get all contents without having privileges to read them all.
+	 */
+	@Test(expected = AccessForbiddenException.class)
+	public void getAllWithoutPrivilege() {
+		getAllContentsAsUser(fix.kunegundaId);
+	}
+
+	/**
+	 * Tries to change the announcement instances of an announcement without
+	 * having privileges to do it.
+	 */
+	@Test
+	public void updateCollectionWithoutPrivileges() {
+		/*
+		 * Grant WRITE on AnnouncementInstance to kunegunda so that exception is
+		 * caused by adding to collection - not by creating a new instance.
+		 */
+		executeInTransaction(new Executable() {
+			@Override
+			public void execute() {
+				aclService.addClassAccess(AnnouncementInstance.class,
+						ACLRights.WRITE, userDao.getUser(fix.kunegundaId));
+			}
+		});
+		addInstanceToAnnouncement(fix.kunegundaId, DbFix.apelTitle,
+				fix.ernestId);
+	}
+
+	/**
+	 * Tries to change the announcement instances of an announcement having
+	 * needed privileges.
+	 */
+	@Test
+	public void updateCollectionWithPrivileges() {
+		makeKunegundaPowerfulEnoughToSend();
+		addInstanceToAnnouncement(fix.kunegundaId, DbFix.apelTitle,
+				fix.ernestId);
 	}
 }

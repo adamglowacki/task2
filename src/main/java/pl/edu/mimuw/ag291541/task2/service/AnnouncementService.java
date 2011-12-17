@@ -22,10 +22,8 @@ public interface AnnouncementService {
 	public void logout();
 
 	/**
-	 * Sends announcements to many users. It also grants the sender (the user
-	 * that is logged in) the write access to the object and all the recipients
-	 * the read access to the announcement and their announcements instances
-	 * (that are also created here).
+	 * Sends announcements to many users, creating also needed
+	 * <code>AnnouncementInstance</code> objects.
 	 * 
 	 * @param title
 	 *            Title of the announcement.
@@ -40,9 +38,6 @@ public interface AnnouncementService {
 
 	/**
 	 * Sends announcements to many users (all who are in the provided groups).
-	 * It also grants the sender (the user that is logged in) the write access
-	 * to the object and all the recipients the read access to the announcement
-	 * and their announcements instances (that are also created here).
 	 * 
 	 * @param title
 	 *            Title of the announcement.

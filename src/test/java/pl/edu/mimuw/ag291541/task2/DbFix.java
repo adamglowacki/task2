@@ -3,7 +3,6 @@ package pl.edu.mimuw.ag291541.task2;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.SessionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -64,7 +63,6 @@ public class DbFix {
 	public Long jerzyGazetaWriteId;
 	public Long ernestObjectWriteId;
 
-	private SessionFactory sessionFactory;
 	private PlatformTransactionManager txManager;
 	private JdbcTemplate template;
 
@@ -72,19 +70,27 @@ public class DbFix {
 	private ContentDAO contentDao;
 	private AceDAO aceDao;
 
-	// private Logger log = LoggerFactory.getLogger(DbFix.class);
-
-	public DbFix(JdbcTemplate template, SessionFactory factory,
-			PlatformTransactionManager txManager, UserDAO userDao,
-			ContentDAO contentDao, AceDAO aceDao) {
+	public DbFix(JdbcTemplate template, PlatformTransactionManager txManager,
+			UserDAO userDao, ContentDAO contentDao, AceDAO aceDao) {
 		this.template = template;
-		this.sessionFactory = factory;
 		this.txManager = txManager;
 		this.userDao = userDao;
 		this.contentDao = contentDao;
 		this.aceDao = aceDao;
 	}
 
+	/**
+	 * Creates a fixture in database.<br>
+	 * ACL stuff:
+	 * <ul>
+	 * <li>Ernest is superuser, he has WRITE on Object.</li>
+	 * <li>Kunegunda and Jerzy have READ on Gazeta and Apel (with except that
+	 * Jerzy has WRITE on Gazeta).</li>
+	 * <li>Nobody but Ernest can do anything with Zakazane.</li>
+	 * <li>Kunegunda has WRITE on A and READ on B classes.</li>
+	 * <li>Jerzy has READ on CObj.</li>
+	 * </ul>
+	 */
 	@Transactional
 	public void loadData() {
 		User kunegunda = userDao.createUser(kunegundaName, kunegundaSurname);
@@ -142,17 +148,17 @@ public class DbFix {
 	public void removeData() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		txManager.getTransaction(null).flush();
-		deleteAllRawSql(ANNOUNCEMENT_INSTANCE_TABLE);
-		deleteAllRawSql(CONTENT_TABLE);
-		deleteAllRawSql(CLASS_ACE_TABLE);
-		deleteAllRawSql(INSTANCE_ACE_TABLE);
-		deleteAllRawSql(GROUP_USER_TABLE);
-		deleteAllRawSql(GROUP_TABLE);
-		deleteAllRawSql(USER_TABLE);
+		deleteAllSql(ANNOUNCEMENT_INSTANCE_TABLE);
+		deleteAllSql(CONTENT_TABLE);
+		deleteAllSql(CLASS_ACE_TABLE);
+		deleteAllSql(INSTANCE_ACE_TABLE);
+		deleteAllSql(GROUP_USER_TABLE);
+		deleteAllSql(GROUP_TABLE);
+		deleteAllSql(USER_TABLE);
 	}
 
 	@Transactional
-	private <T> void deleteAllRawSql(String table) {
+	private <T> void deleteAllSql(String table) {
 		template.execute("DELETE FROM " + table);
 	}
 }

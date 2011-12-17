@@ -13,13 +13,13 @@ import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.dao.AceDAO;
 import pl.edu.mimuw.ag291541.task2.security.entity.ClassAce;
 import pl.edu.mimuw.ag291541.task2.security.entity.InstanceAce;
-import pl.edu.mimuw.ag291541.task2.security.service.AclUtil;
+import pl.edu.mimuw.ag291541.task2.security.service.AclUtilLibrary;
 
 public class HibernateAceDAO extends HibernateDaoSupport implements AceDAO {
 	@Autowired
 	DaoUtilLibrary daoUtil;
 	@Autowired
-	AclUtil aclUtil;
+	AclUtilLibrary aclUtil;
 
 	@Override
 	public ClassAce createClassAce(Long u, ACLRights rights, String sn) {

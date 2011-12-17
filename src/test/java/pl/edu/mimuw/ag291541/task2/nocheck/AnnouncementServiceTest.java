@@ -14,13 +14,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.edu.mimuw.ag291541.task2.DeclarativeTransactionTest;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.security.UserAuthenticationImpl;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
-public class AnnouncementServiceTest extends DbTest {
+public class AnnouncementServiceTest extends DeclarativeTransactionTest {
 	private Logger log = LoggerFactory.getLogger(ContentServiceTest.class);
 
 	private static final String title = "Obwieszczenie dotygodniowe";
@@ -103,7 +104,6 @@ public class AnnouncementServiceTest extends DbTest {
 	@Transactional
 	public void getAllUnread() {
 		User kunegunda = userDao.getUser(fix.kunegundaId);
-		// announcementService.login(kunegunda);
 		Set<Announcement> unread = announcementService.getAllUnread(kunegunda);
 		assertEquals(unread.size(), 1);
 		Announcement a = contentService.getAnnouncement(fix.apelId);

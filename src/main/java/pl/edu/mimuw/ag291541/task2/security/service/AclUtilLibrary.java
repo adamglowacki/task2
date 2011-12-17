@@ -1,6 +1,10 @@
 package pl.edu.mimuw.ag291541.task2.security.service;
 
-public interface AclUtil {
+/**
+ * Utility functions to perform repeating tasks associated with managing ACL
+ * entries.
+ */
+public interface AclUtilLibrary {
 	/**
 	 * Calculates a unique id for given object. It tries to be "wise" and looks
 	 * for a field <code>id</code> with type <code>Long</code> and if it exists
@@ -8,7 +12,8 @@ public interface AclUtil {
 	 * 
 	 * @param o
 	 *            Object whose id we want to know.
-	 * @return
+	 * @return The value of the field named <code>id</code> or
+	 *         <code>Object.hashCode()</code> return value.
 	 */
 	public Long getObjectId(Object o);
 }

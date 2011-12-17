@@ -16,7 +16,7 @@
 
 	<aop:aspectj-autoproxy />
 	<context:annotation-config />
-	<context:spring-configured />
+	<!-- <context:spring-configured /> -->
 
 	<bean id="jdbcDataSource" destroy-method="close"
 		class="org.apache.commons.dbcp.BasicDataSource">
@@ -36,7 +36,7 @@
 
 	<bean id="aclCheck" class="pl.edu.mimuw.ag291541.task2.security.executor.AclCheck" />
 	<bean id="aclGrant" class="pl.edu.mimuw.ag291541.task2.security.executor.AclGrant">
-		<!-- <property name="txManager" ref="transactionManager" /> -->
+		<property name="jdbcTxManager" ref="jdbcTransactionManager" />
 		<property name="dataSource" ref="jdbcDataSource" />
 	</bean>
 
@@ -44,15 +44,6 @@
 		class="pl.edu.mimuw.ag291541.task2.security.executor.DuringProcessingImpl" />
 
 	<bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener" />
-	<!-- <bean id="defaultPreInsertListener" class="org.hibernate.event.def.DefaultPreInsertEventListener" 
-		/> -->
-	<!-- <bean id="defaultPreUpdateListener" class="org.hibernate.event.def.DefaultPreUpdateEventListener" 
-		/> -->
-	<!-- <bean id="defaultPreDeleteListener" class="org.hibernate.event.def.DefaultPreDeleteEventListener" 
-		/> -->
-	<!-- -->
-	<!-- <bean id="customPreLoadListener" class="pl.edu.mimuw.gtimoszuk.listener.SamplePreLoadEventListener"> -->
-	<!-- </bean> -->
 
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -73,7 +64,7 @@
 		<property name="hibernateProperties">
 			<value>
 				hibernate.default_schema=public
-				hibernate.hbm2ddl.auto=update
+				hibernate.hbm2ddl.auto=validate
 				hibernate.show_sql=true
 				hibernate.id.new_generator_mappings=true
 				hibernate.format_sql=true
@@ -112,6 +103,11 @@
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
+	<bean id="jdbcTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+		autowire-candidate="false">
+		<property name="dataSource" ref="jdbcDataSource" />
+	</bean>
 
 	<tx:annotation-driven />
 
@@ -123,9 +119,15 @@
 		<constructor-arg ref="dataSource" />
 	</bean>
 
-	<bean id="userUtil" class="pl.edu.mimuw.ag291541.task2.util.UserUtilImpl" />
+	<bean id="userUtilLibrary" class="pl.edu.mimuw.ag291541.task2.util.UserUtilLibraryImpl" />
 
-	<bean id="daoUtilLibrary" class="pl.edu.mimuw.ag291541.task2.daoUtil.DaoUtilLibrary" />
+	<bean id="daoUtilLibrary" class="pl.edu.mimuw.ag291541.task2.daoUtil.DaoUtilLibraryImpl" />
+
+	<bean id="txUtilLibrary"
+		class="pl.edu.mimuw.ag291541.task2.util.TransactionUtilLibraryImpl" />
+
+	<bean id="aclUtilLibrary"
+		class="pl.edu.mimuw.ag291541.task2.security.service.AclUtilLibraryImpl" />
 
 	<bean id="userDao"
 		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateUserDAO">
@@ -140,8 +142,6 @@
 		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateAceDAO">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
-	<bean id="aclUtil"
-		class="pl.edu.mimuw.ag291541.task2.security.service.AclUtilImpl" />
 
 	<bean id="contentService" class="pl.edu.mimuw.ag291541.task2.service.ContentServiceImpl" />
 	<bean id="announcementService"

@@ -14,6 +14,8 @@ import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
 @Repository
 public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
+	private static final String HQL_GET_GROUP_BY_NAME = "from Group where name = :name";
+	private static final String HQL_GET_USER_BY_NAME_AND_SURNAME = "from User where name = :name and surname = :surname";
 	@Autowired
 	private DaoUtilLibrary util;
 
@@ -37,7 +39,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@Transactional
 	public Group getGroup(String name) {
 		return util.unique(getHibernateTemplate().findByNamedParam(
-				"from Group where name = :name", "name", name));
+				HQL_GET_GROUP_BY_NAME, "name", name));
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 	@Transactional
 	public User getUser(String name, String surname) {
 		return util.unique(getHibernateTemplate().findByNamedParam(
-				"from User where name = :name and surname = :surname",
+				HQL_GET_USER_BY_NAME_AND_SURNAME,
 				new String[] { "name", "surname" },
 				new String[] { name, surname }));
 	}

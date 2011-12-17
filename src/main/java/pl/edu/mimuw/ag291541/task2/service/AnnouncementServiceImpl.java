@@ -15,13 +15,13 @@ import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.security.UserAuthenticationImpl;
 import pl.edu.mimuw.ag291541.task2.security.entity.Group;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
-import pl.edu.mimuw.ag291541.task2.util.UserUtil;
+import pl.edu.mimuw.ag291541.task2.util.UserUtilLibrary;
 
 public class AnnouncementServiceImpl implements AnnouncementService {
 	@Autowired
 	ContentDAO contentDao;
 	@Autowired
-	UserUtil userUtil;
+	UserUtilLibrary userUtil;
 
 	@Override
 	@Transactional

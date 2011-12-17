@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import pl.edu.mimuw.ag291541.task2.DeclarativeTransactionTest;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
 import pl.edu.mimuw.ag291541.task2.exampletype.A;
 import pl.edu.mimuw.ag291541.task2.exampletype.B;
@@ -17,7 +18,7 @@ import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.entity.ClassAce;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
-public class AclServiceTest extends DbTest {
+public class AclServiceTest extends DeclarativeTransactionTest {
 	private Logger log = LoggerFactory.getLogger(AclServiceTest.class);
 
 	@Test

@@ -12,6 +12,12 @@ public class UserAuthenticationImpl implements UserAuthentication {
 
 	private final User user;
 
+	/**
+	 * Accepts <code>User</code> to be logged in.
+	 * 
+	 * @param user
+	 *            The one who is to be logged in.
+	 */
 	public UserAuthenticationImpl(User user) {
 		this.user = user;
 	}
@@ -38,13 +44,14 @@ public class UserAuthenticationImpl implements UserAuthentication {
 
 	@Override
 	public boolean isAuthenticated() {
+		/* Always authenticated. */
 		return true;
 	}
 
 	@Override
 	public void setAuthenticated(boolean isAuthenticated)
 			throws IllegalArgumentException {
-		/* do nothing - always authenticated */
+		/* Do nothing - always authenticated. */
 	}
 
 	@Override

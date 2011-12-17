@@ -1,5 +1,6 @@
 package pl.edu.mimuw.ag291541.task2.entity;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
@@ -24,6 +25,7 @@ public class Content {
 	@Id
 	private Long id;
 	@NotNull
+	@Column(unique = true)
 	private String title;
 	private String body;
 

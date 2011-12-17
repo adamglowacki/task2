@@ -6,11 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * If a class is annotated with it then ACL checking is runned for entities of
- * this class loaded through Hibernate.
+ * If a class is annotated with it then ACL checking is performed for instances
+ * of this class loaded through Hibernate (but not necessarily for instances of
+ * its subclasses).
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface AclGuarded {
-
 }

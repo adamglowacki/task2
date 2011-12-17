@@ -5,10 +5,23 @@ import java.lang.reflect.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AclUtilImpl implements AclUtil {
+public class AclUtilLibraryImpl implements AclUtilLibrary {
 	private static final String ID_FIELD = "id";
-	private Logger log = LoggerFactory.getLogger(AclUtilImpl.class);
+	private Logger log = LoggerFactory.getLogger(AclUtilLibraryImpl.class);
 
+	/**
+	 * Recursively looks for a field with given name in the class and its
+	 * superclasses.
+	 * 
+	 * @param clazz
+	 *            The start point of search.
+	 * @param name
+	 *            Name of the field.
+	 * @return The field with named <code>name</code>.
+	 * @throws NoSuchFieldException
+	 *             In case of non-existence of such a field up to
+	 *             <code>Object</code> class.
+	 */
 	private Field getDeclaredOrInheritedField(Class<?> clazz, String name)
 			throws NoSuchFieldException {
 		if (clazz != null) {
@@ -27,6 +40,10 @@ public class AclUtilImpl implements AclUtil {
 		try {
 			Field idField = getDeclaredOrInheritedField(o.getClass(), ID_FIELD);
 			if (Long.class.isAssignableFrom(idField.getType())) {
+				/*
+				 * We do not care if it is private or public (or something
+				 * else).
+				 */
 				idField.setAccessible(true);
 				return (Long) idField.get(o);
 			}
@@ -39,5 +56,4 @@ public class AclUtilImpl implements AclUtil {
 		log.debug("Falling back to hash code.");
 		return new Long(o.hashCode());
 	}
-
 }

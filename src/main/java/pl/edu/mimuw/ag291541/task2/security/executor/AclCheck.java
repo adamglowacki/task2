@@ -17,22 +17,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import pl.edu.mimuw.ag291541.task2.security.ACLRights;
 import pl.edu.mimuw.ag291541.task2.security.annotation.AclGuarded;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
-import pl.edu.mimuw.ag291541.task2.security.executor.exception.ActionForbiddenException;
+import pl.edu.mimuw.ag291541.task2.security.executor.exception.AccessForbiddenException;
 import pl.edu.mimuw.ag291541.task2.security.service.ACLService;
-import pl.edu.mimuw.ag291541.task2.util.UserUtil;
+import pl.edu.mimuw.ag291541.task2.util.UserUtilLibrary;
 
 public class AclCheck implements PreUpdateEventListener,
 		PreDeleteEventListener, PreInsertEventListener, PreLoadEventListener {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 581928135979956278L;
+
+	private Logger log = LoggerFactory.getLogger(AclCheck.class);
 
 	@Autowired
 	private ACLService aclService;
 	@Autowired
-	private UserUtil userUtil;
+	private UserUtilLibrary userUtil;
 	@Autowired
-	private DuringProcessingSet duringAccessCheck;
-
-	private Logger log = LoggerFactory.getLogger(AclCheck.class);
+	private DuringProcessing duringAccessCheck;
 
 	private boolean isGuarded(Object o) {
 		Class<?> clazz = o.getClass();
@@ -54,7 +54,7 @@ public class AclCheck implements PreUpdateEventListener,
 			@Override
 			public void checkAccess(User u) {
 				if (!aclService.checkCreationAcl(u, entity.getClass()))
-					throw new ActionForbiddenException();
+					throw new AccessForbiddenException();
 			}
 		});
 		return false;
@@ -80,26 +80,30 @@ public class AclCheck implements PreUpdateEventListener,
 			@Override
 			public void checkAccess(User u) {
 				if (!aclService.checkObjectAcl(u, whatToDo, entity))
-					throw new ActionForbiddenException();
+					throw new AccessForbiddenException();
 			}
 		});
 	}
 
+	/*
+	 * Executes given closure only if user is logged in. It also prevents
+	 * recursion when checking ACLs. It happens because checking access needs
+	 * session to be flushed and flushing triggers access check again on the
+	 * saved objects.
+	 */
 	private void checkAccess(Object entity, CheckingAccess exec) {
 		if (isGuarded(entity)) {
 			User loggedUser = userUtil.getUser();
-			// TODO: change it so that not logged users are also thrown with an
-			// exception
-			if (loggedUser != null
-					&& !duringAccessCheck.isDuringAccessCheck(entity)) {
+			if (loggedUser == null)
+				log.info("User not logged in. Access control will not be executed.");
+			else if (!duringAccessCheck.is(entity)) {
 				try {
-					duringAccessCheck.setDuringAccessCheck(entity);
+					duringAccessCheck.set(entity);
 					exec.checkAccess(loggedUser);
 				} finally {
 					duringAccessCheck.clear(entity);
 				}
 			}
-
 		}
 	}
 

@@ -15,12 +15,17 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import pl.edu.mimuw.ag291541.task2.DbFix;
+import pl.edu.mimuw.ag291541.task2.DeclarativeTransactionTest;
 import pl.edu.mimuw.ag291541.task2.entity.Announcement;
 import pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance;
 import pl.edu.mimuw.ag291541.task2.entity.Content;
 import pl.edu.mimuw.ag291541.task2.security.entity.User;
 
-public class ContentServiceTest extends DbTest {
+public class ContentServiceTest extends DeclarativeTransactionTest {
+	private static final String NON_EXISTING_CONTENT_TITLE = "Nieistniejący content";
+
+	private static final String NEW_UNIQUE_AMONG_CONTENT_TITLE = "A to jest niepowtarzalny tytuł";
+
 	private Logger log = LoggerFactory.getLogger(ContentServiceTest.class);
 
 	private final String title = "To jest tytuł.";
@@ -46,6 +51,16 @@ public class ContentServiceTest extends DbTest {
 
 	@Test
 	@Transactional
+	public void getContentByTitle() {
+		Content c = contentService.getContent(DbFix.gazetaTitle);
+		assertEquals(c.getTitle(), DbFix.gazetaTitle);
+		c = contentService.getContent(NON_EXISTING_CONTENT_TITLE);
+		assertNull(c);
+		log.info("Content retrieving by its title is ok.");
+	}
+
+	@Test
+	@Transactional
 	public void getAnnouncement() {
 		Announcement a = contentService.getAnnouncement(fix.apelId);
 		assertEquals(a.getTitle(), DbFix.apelTitle);
@@ -67,6 +82,17 @@ public class ContentServiceTest extends DbTest {
 
 	@Test
 	@Transactional
+	public void getAnnouncementByTitle() {
+		Announcement a = contentService.getAnnouncement(DbFix.apelTitle);
+		assertEquals(a.getTitle(), DbFix.apelTitle);
+		assertEquals(a.getId(), fix.apelId);
+		a = contentService.getAnnouncement(DbFix.gazetaTitle);
+		assertNull(a);
+		log.info("Getting announcement by its title is ok.");
+	}
+
+	@Test
+	@Transactional
 	public void updateContentBody() {
 		final String body = "To jest coś całkiem nowego.";
 		Content c = contentService.getContent(fix.apelId);
@@ -79,11 +105,10 @@ public class ContentServiceTest extends DbTest {
 
 	@Test
 	@Transactional
-	public void updateContentTitle() {
+	public void updateContent() {
 		Content apel = contentService.getContent(fix.apelId);
-		apel.setTitle(DbFix.gazetaTitle);
+		apel.setTitle(NEW_UNIQUE_AMONG_CONTENT_TITLE);
 		contentService.updateContent(apel);
-		log.error("Uniqueness of content titles is not preserved.");
 	}
 
 	@Transactional

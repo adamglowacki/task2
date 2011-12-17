@@ -37,4 +37,5 @@ public class Announcement extends Content {
 		return "Announcement [instances=" + instances + "] derived from "
 				+ super.toString();
 	}
+	/* IT relies on hashCode and equals provided by subclass (that is Content). */
 }

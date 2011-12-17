@@ -73,15 +73,15 @@ public class AnnouncementInstance {
 		this.announcement = announcement;
 	}
 
+	public void markRead() {
+		setReadDate(Calendar.getInstance());
+		setReadStatus(true);
+	}
+
 	@Override
 	public String toString() {
 		return "AnnouncementInstance [id=" + id + ", readStatus=" + readStatus
 				+ ", readDate=" + readDate + ", receiver=" + receiver + "]";
-	}
-
-	public void markRead() {
-		setReadDate(Calendar.getInstance());
-		setReadStatus(true);
 	}
 
 	@Override

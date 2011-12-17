@@ -29,9 +29,19 @@ public class ContentServiceImpl implements ContentService {
 	}
 
 	@Override
+	public Content getContent(String title) {
+		return contentDao.getContent(title);
+	}
+
+	@Override
 	@Transactional(readOnly = true)
 	public Announcement getAnnouncement(Long id) {
 		return contentDao.getAnnouncement(id);
+	}
+
+	@Override
+	public Announcement getAnnouncement(String title) {
+		return contentDao.getAnnouncement(title);
 	}
 
 	@Override
@@ -57,5 +67,4 @@ public class ContentServiceImpl implements ContentService {
 	public List<Announcement> getAllAnnouncements() {
 		return contentDao.getAllAnnouncements();
 	}
-
 }
