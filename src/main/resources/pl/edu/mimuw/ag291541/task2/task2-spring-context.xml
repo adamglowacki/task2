@@ -1,151 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
-	xmlns:security="http://www.springframework/schema/security"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop
 	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
 	http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/tx
 	http://www.springframework.org/schema/tx/spring-tx.xsd
 	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-3.0.xsd
-	http://www.springframework.org/schema/security
-	http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<aop:aspectj-autoproxy />
-	<context:annotation-config />
-	<!-- <context:spring-configured /> -->
+    <aop:aspectj-autoproxy/>
+    <context:annotation-config/>
+    <!--<context:spring-configured/>-->
 
-	<bean id="jdbcDataSource" destroy-method="close"
-		class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost/postgres" />
-		<property name="username" value="hibernate" />
-		<property name="password" value="hibernate" />
-	</bean>
+    <bean id="jdbcDataSource" destroy-method="close"
+          class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://localhost/postgres"/>
+        <property name="username" value="hibernate"/>
+        <property name="password" value="hibernate"/>
+    </bean>
 
-	<bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost/postgres" />
-		<property name="username" value="hibernate" />
-		<property name="password" value="hibernate" />
-	</bean>
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://localhost/postgres"/>
+        <property name="username" value="hibernate"/>
+        <property name="password" value="hibernate"/>
+    </bean>
 
-	<bean id="aclCheck" class="pl.edu.mimuw.ag291541.task2.security.executor.AclCheck" />
-	<bean id="aclGrant" class="pl.edu.mimuw.ag291541.task2.security.executor.AclGrant">
-		<property name="jdbcTxManager" ref="jdbcTransactionManager" />
-		<property name="dataSource" ref="jdbcDataSource" />
-	</bean>
+    <bean id="aclCheck" class="pl.edu.mimuw.ag291541.task2.security.executor.AclCheck"/>
+    <bean id="aclGrant" class="pl.edu.mimuw.ag291541.task2.security.executor.AclGrant">
+        <property name="jdbcTxManager" ref="jdbcTransactionManager"/>
+        <property name="dataSource" ref="jdbcDataSource"/>
+    </bean>
 
-	<bean id="duringProcessing"
-		class="pl.edu.mimuw.ag291541.task2.security.executor.DuringProcessingImpl" />
+    <bean id="duringProcessing"
+          class="pl.edu.mimuw.ag291541.task2.security.executor.DuringProcessingImpl"/>
 
-	<bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener" />
+    <bean id="defaultPreLoadListener" class="org.hibernate.event.def.DefaultPreLoadEventListener"/>
 
-	<bean id="sessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="annotatedClasses">
-			<list>
-				<value>pl.edu.mimuw.ag291541.task2.security.entity.User</value>
-				<value>pl.edu.mimuw.ag291541.task2.security.entity.Group</value>
-				<value>pl.edu.mimuw.ag291541.task2.entity.Content</value>
-				<value>pl.edu.mimuw.ag291541.task2.entity.Announcement</value>
-				<value>pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance
-				</value>
-				<value>pl.edu.mimuw.ag291541.task2.security.entity.ClassAce</value>
-				<value>pl.edu.mimuw.ag291541.task2.security.entity.InstanceAce
-				</value>
-			</list>
-		</property>
-		<property name="hibernateProperties">
-			<value>
-				hibernate.default_schema=public
-				hibernate.hbm2ddl.auto=validate
-				hibernate.show_sql=true
-				hibernate.id.new_generator_mappings=true
-				hibernate.format_sql=true
-				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
-				hibernate.c3p0.min_size=5
-				hibernate.c3p0.max_size=20
-				hibernate.c3p0.timeout=1800
-				hibernate.c3p0.max_statements=50
-			</value>
-		</property>
-		<property name="eventListeners">
-			<map>
-				<entry key="pre-load">
-					<list>
-						<ref bean="defaultPreLoadListener" />
-						<ref bean="aclCheck" />
-					</list>
-				</entry>
-				<entry key="pre-insert">
-					<ref bean="aclCheck" />
-				</entry>
-				<entry key="pre-update">
-					<ref bean="aclCheck" />
-				</entry>
-				<entry key="pre-delete">
-					<ref bean="aclCheck" />
-				</entry>
-				<entry key="post-commit-insert">
-					<ref bean="aclGrant" />
-				</entry>
-			</map>
-		</property>
-	</bean>
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>pl.edu.mimuw.ag291541.task2.security.entity.User</value>
+                <value>pl.edu.mimuw.ag291541.task2.security.entity.Group</value>
+                <value>pl.edu.mimuw.ag291541.task2.entity.Content</value>
+                <value>pl.edu.mimuw.ag291541.task2.entity.Announcement</value>
+                <value>pl.edu.mimuw.ag291541.task2.entity.AnnouncementInstance
+                </value>
+                <value>pl.edu.mimuw.ag291541.task2.security.entity.ClassAce</value>
+                <value>pl.edu.mimuw.ag291541.task2.security.entity.InstanceAce
+                </value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <value>
+                hibernate.default_schema=public
+                hibernate.hbm2ddl.auto=validate
+                hibernate.show_sql=true
+                hibernate.id.new_generator_mappings=true
+                hibernate.format_sql=true
+                hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+                hibernate.c3p0.min_size=5
+                hibernate.c3p0.max_size=20
+                hibernate.c3p0.timeout=1800
+                hibernate.c3p0.max_statements=50
+            </value>
+        </property>
+        <property name="eventListeners">
+            <map>
+                <entry key="pre-load">
+                    <list>
+                        <ref bean="defaultPreLoadListener"/>
+                        <ref bean="aclCheck"/>
+                    </list>
+                </entry>
+                <entry key="pre-insert">
+                    <ref bean="aclCheck"/>
+                </entry>
+                <entry key="pre-update">
+                    <ref bean="aclCheck"/>
+                </entry>
+                <entry key="pre-delete">
+                    <ref bean="aclCheck"/>
+                </entry>
+                <entry key="post-commit-insert">
+                    <ref bean="aclGrant"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
 
-	<bean id="transactionManager"
-		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	<bean id="jdbcTransactionManager"
-		class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
-		autowire-candidate="false">
-		<property name="dataSource" ref="jdbcDataSource" />
-	</bean>
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="jdbcTransactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          autowire-candidate="false">
+        <property name="dataSource" ref="jdbcDataSource"/>
+    </bean>
 
-	<tx:annotation-driven />
+    <tx:annotation-driven/>
 
-	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
-		<property name="allowCreate" value="true" />
-		<property name="sessionFactory" ref="sessionFactory" />
-	</bean>
-	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg ref="dataSource" />
-	</bean>
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="allowCreate" value="true"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource"/>
+    </bean>
 
-	<bean id="userUtilLibrary" class="pl.edu.mimuw.ag291541.task2.util.UserUtilLibraryImpl" />
+    <bean id="userUtilLibrary" class="pl.edu.mimuw.ag291541.task2.util.UserUtilLibraryImpl"/>
 
-	<bean id="daoUtilLibrary" class="pl.edu.mimuw.ag291541.task2.daoUtil.DaoUtilLibraryImpl" />
+    <bean id="daoUtilLibrary" class="pl.edu.mimuw.ag291541.task2.daoUtil.DaoUtilLibraryImpl"/>
 
-	<bean id="txUtilLibrary"
-		class="pl.edu.mimuw.ag291541.task2.util.TransactionUtilLibraryImpl" />
+    <bean id="txUtilLibrary"
+          class="pl.edu.mimuw.ag291541.task2.util.TransactionUtilLibraryImpl"/>
 
-	<bean id="aclUtilLibrary"
-		class="pl.edu.mimuw.ag291541.task2.security.service.AclUtilLibraryImpl" />
+    <bean id="aclUtilLibrary"
+          class="pl.edu.mimuw.ag291541.task2.security.service.AclUtilLibraryImpl"/>
 
-	<bean id="userDao"
-		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateUserDAO">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
+    <bean id="userDao"
+          class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateUserDAO">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
 
-	<bean id="contentDao"
-		class="pl.edu.mimuw.ag291541.task2.dao.hibernate.HibernateContentDAO">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
-	<bean id="aceDao"
-		class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateAceDAO">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-	</bean>
+    <bean id="contentDao"
+          class="pl.edu.mimuw.ag291541.task2.dao.hibernate.HibernateContentDAO">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
+    <bean id="aceDao"
+          class="pl.edu.mimuw.ag291541.task2.security.dao.hibernate.HibernateAceDAO">
+        <property name="hibernateTemplate" ref="hibernateTemplate"/>
+    </bean>
 
-	<bean id="contentService" class="pl.edu.mimuw.ag291541.task2.service.ContentServiceImpl" />
-	<bean id="announcementService"
-		class="pl.edu.mimuw.ag291541.task2.service.AnnouncementServiceImpl" />
-	<bean id="aclService"
-		class="pl.edu.mimuw.ag291541.task2.security.service.ACLServiceImpl" />
+    <bean id="contentService" class="pl.edu.mimuw.ag291541.task2.service.ContentServiceImpl"/>
+    <bean id="announcementService"
+          class="pl.edu.mimuw.ag291541.task2.service.AnnouncementServiceImpl"/>
+    <bean id="aclService"
+          class="pl.edu.mimuw.ag291541.task2.security.service.ACLServiceImpl"/>
 </beans>

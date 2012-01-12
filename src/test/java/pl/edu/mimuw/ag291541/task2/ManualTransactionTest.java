@@ -11,7 +11,7 @@ import pl.edu.mimuw.ag291541.task2.util.TransactionUtilLibrary;
 @TransactionConfiguration(defaultRollback = false)
 public abstract class ManualTransactionTest extends GenericTest {
 	@Autowired
-	private TransactionUtilLibrary txUtil;
+	protected TransactionUtilLibrary txUtil;
 
 	protected void login(Long id) {
 		announcementService.login(userDao.getUser(id));

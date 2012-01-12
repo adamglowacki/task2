@@ -3,6 +3,9 @@
 /.project
 /.classpath
 /.settings
+/.idea
+
+task2.ml
 public.sql
 refresh-db.sh
 script-schema.sh
